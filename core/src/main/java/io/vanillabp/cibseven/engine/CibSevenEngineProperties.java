@@ -85,8 +85,7 @@ public class CibSevenEngineProperties {
 
   /**
    * The serialization format for a shared value the engine has no variable type for, e.g.
-   * {@code application/json} (the SPIN JSON dataformat) or {@code application/xstream}
-   * (camunda-xstream). Such a value is a nested value, or a number this engine cannot store
+   * {@code application/json} (the SPIN JSON dataformat). Such a value is a nested value, or a number this engine cannot store
    * as itself. The format is applied twice. First to the engine's
    * {@code defaultSerializationFormat}, so an application configures the format once. Then
    * per written variable, so a workflow module or a single workflow may override it
@@ -101,8 +100,8 @@ public class CibSevenEngineProperties {
   /**
    * The Camunda engine plugins of this adapter id. Each one is a named section. It names a
    * class and has its own properties, and Camunda itself applies them (see
-   * {@link CibSevenEnginePlugins}). This is how a serialization dataformat (camunda-xstream,
-   * SPIN) gets into an engine VanillaBP builds. It is per adapter id, so two embedded engines
+   * {@link CibSevenEnginePlugins}). This is how a serialization dataformat such as
+   * SPIN gets into an engine VanillaBP builds. It is per adapter id, so two embedded engines
    * can have different plugins.
    */
   private java.util.Map<String, CibSevenEnginePluginProperties> enginePlugins = java.util.Map.of();

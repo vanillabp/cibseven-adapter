@@ -118,7 +118,7 @@ public final class CibSevenTablePrefixSchema {
       throw new IllegalStateException(
           """
               CIB seven adapter '%s' is configured with the table prefix '%s' \
-              ('vanillabp.adapters.%s.table-prefix') and 'database-schema-update: %s'. Camunda \
+              ('vanillabp.adapters.%s.table-prefix') and 'database-schema-update: %s'. CIB seven \
               cannot create prefixed tables: its schema management executes the DDL shipped with \
               the engine, and those statements name the tables verbatim, so it would create a set \
               of ACT_* tables in %s - not the tables this adapter id reads. %s"""
@@ -137,7 +137,7 @@ public final class CibSevenTablePrefixSchema {
           """
               CIB seven adapter '%s' runs on the table prefix '%s' \
               ('vanillabp.adapters.%s.table-prefix') in %s, but these tables of it are missing: \
-              %s. A prefixed engine needs a schema which is there already, because Camunda's own \
+              %s. A prefixed engine needs a schema which is there already, because CIB seven's own \
               schema management ignores the prefix. %s"""
               .formatted(
                   adapterId,
