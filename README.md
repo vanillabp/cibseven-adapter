@@ -156,8 +156,8 @@ describes each of them. The adapter reads none of CIB seven's own keys (`camunda
 
 One key is new:
 
-|       Key         | Default |                                                                    What it does                                                                     |
-|-------------------|---------|-----------------------------------------------------------------------------------------------------------------------------------------------------|
+|        Key        | Default |                                                                  What it does                                                                  |
+|-------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | `modeler-enabled` | `false` | Whether the engine creates and checks the tables of CIB seven's modeler and AI chat (`MOD_*`, `CHAT_MESSAGES`). Only the adapter level exists. |
 
 CIB seven 2.2 added a modeler with tables of its own, and the engine switches it on by default. With
@@ -229,7 +229,7 @@ applications, as with Camunda 7.
 
 ## Supported CIB seven version
 
-| Adapter version      | CIB seven version it was built and tested with |
+|   Adapter version    | CIB seven version it was built and tested with |
 |----------------------|------------------------------------------------|
 | `2.0.0-2.2-SNAPSHOT` | 2.2.0                                          |
 

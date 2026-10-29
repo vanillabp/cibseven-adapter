@@ -7,3 +7,4 @@ VanillaBP 1 had no adapter for CIB seven, so there is nothing to upgrade from in
   first. Everything it says holds here, with `cibseven` in place of `camunda7`.
 - An application which moves from Camunda 7 to CIB seven reads
   [Migrating from Camunda 7](./README.md#migrating-from-camunda-7) in the README.
+
