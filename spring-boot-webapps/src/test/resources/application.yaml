@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    username: sa
+    password: ""
+vanillabp:
+  adapters:
+    cibseven:
+      type: cibseven
+  prioritized-adapters:
+    - cibseven
