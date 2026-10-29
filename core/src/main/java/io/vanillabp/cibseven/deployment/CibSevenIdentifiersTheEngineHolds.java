@@ -69,6 +69,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public final class CibSevenIdentifiersTheEngineHolds {
 
+  /**
+   * The adapter types of the other VanillaBP adapters which write deployments into the same
+   * tables: the Camunda 7 adapter and the adapter of the other fork, Operaton. An application
+   * which switches its database from one of them to this adapter brings deployments with the
+   * source <code>camunda7:&lt;id&gt;</code> or <code>operaton:&lt;id&gt;</code> along. They are
+   * written as text, because neither adapter is a dependency of this one.
+   */
+  static final java.util.List<String> ADAPTER_TYPES_ON_THE_SAME_TABLES = java.util.List
+      .of("camunda7", "operaton");
+
   private CibSevenIdentifiersTheEngineHolds() {
   }
 
@@ -342,6 +352,30 @@ public final class CibSevenIdentifiersTheEngineHolds {
     }
 
     /**
+     * Whether the source names a VanillaBP adapter of this engine's tables. That is this
+     * adapter, the Camunda 7 adapter and the Operaton adapter. CIB seven runs on the tables of
+     * Camunda 7. So after an application switched to this adapter, its earlier deployments
+     * carry the old source, and they are its own history (see decision 7 in the repository's
+     * DECISIONS.md).
+     */
+    private static boolean deployedByThisAdapterOrOneOnTheSameTables(
+        final String source) {
+
+      if (source == null) {
+        return false;
+      }
+      if (source.startsWith(CibSevenDeploymentService.ADAPTER_TYPE
+          + ":")) {
+        return true;
+      }
+      return ADAPTER_TYPES_ON_THE_SAME_TABLES
+          .stream()
+          .anyMatch(type -> source.startsWith(type
+              + ":"));
+
+    }
+
+    /**
      * The sentence which the core puts behind "is already held by". It also says how sure
      * this adapter is that the holder is somebody else.
      */
@@ -349,10 +383,8 @@ public final class CibSevenIdentifiersTheEngineHolds {
         final Deployment deployment) {
 
       final var source = deployment.getSource();
-      final var deployedByAVanillaBpAdapter = (source != null) && source
-          .startsWith(CibSevenDeploymentService.ADAPTER_TYPE
-              + ":");
-      final var heldBy = "Camunda deployment '%s' (source '%s', deployed at %s)"
+      final var deployedByAVanillaBpAdapter = deployedByThisAdapterOrOneOnTheSameTables(source);
+      final var heldBy = "CIB seven deployment '%s' (source '%s', deployed at %s)"
           .formatted(
               deployment.getName() != null
                   ? deployment.getName()
@@ -364,7 +396,7 @@ public final class CibSevenIdentifiersTheEngineHolds {
       return new Holder(
           deployedByAVanillaBpAdapter
               ? heldBy
-                  + ", which a VanillaBP CIB seven adapter deployed under another name"
+                  + ", which a VanillaBP adapter for CIB seven, Camunda 7 or Operaton deployed under another name"
               : heldBy
                   + ", which nothing of this workflow module deployed",
           // a source which names a CIB seven adapter of VanillaBP may be this very

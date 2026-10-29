@@ -56,6 +56,9 @@ package io.vanillabp.cibseven.engine;
  *   <li><code>dmn-feel-legacy-behavior</code> - OPTIONAL. The engine evaluates decisions with
  *       its older FEEL implementation, which needs no FEEL engine library. Default
  *       <code>false</code>, see {@link CibSevenDmnFeelLegacyBehavior}.</li>
+ *   <li><code>modeler-enabled</code> - OPTIONAL. Whether the engine runs the tables of CIB
+ *       seven's modeler. Default <code>false</code>, unlike the engine's own default, see
+ *       {@link CibSevenModeler}.</li>
  * </ul>
  */
 public class CibSevenEngineProperties {
@@ -82,8 +85,7 @@ public class CibSevenEngineProperties {
 
   /**
    * The serialization format for a shared value the engine has no variable type for, e.g.
-   * {@code application/json} (the SPIN JSON dataformat) or {@code application/xstream}
-   * (camunda-xstream). Such a value is a nested value, or a number this engine cannot store
+   * {@code application/json} (the SPIN JSON dataformat). Such a value is a nested value, or a number this engine cannot store
    * as itself. The format is applied twice. First to the engine's
    * {@code defaultSerializationFormat}, so an application configures the format once. Then
    * per written variable, so a workflow module or a single workflow may override it
@@ -98,8 +100,8 @@ public class CibSevenEngineProperties {
   /**
    * The Camunda engine plugins of this adapter id. Each one is a named section. It names a
    * class and has its own properties, and Camunda itself applies them (see
-   * {@link CibSevenEnginePlugins}). This is how a serialization dataformat (camunda-xstream,
-   * SPIN) gets into an engine VanillaBP builds. It is per adapter id, so two embedded engines
+   * {@link CibSevenEnginePlugins}). This is how a serialization dataformat such as
+   * SPIN gets into an engine VanillaBP builds. It is per adapter id, so two embedded engines
    * can have different plugins.
    */
   private java.util.Map<String, CibSevenEnginePluginProperties> enginePlugins = java.util.Map.of();
@@ -175,6 +177,17 @@ public class CibSevenEngineProperties {
    * serves every workflow module of the adapter id.
    */
   private boolean dmnFeelLegacyBehavior = false;
+
+  /**
+   * Whether the engine runs the tables of CIB seven's modeler (the engine setting
+   * {@code modelerEnabled}). Default <code>false</code>, although the engine's own default is
+   * <code>true</code>: VanillaBP does not use the modeler, and with a table prefix the engine
+   * would not start on a schema without the prefixed modeler tables. See
+   * {@link CibSevenModeler}.
+   * <p>
+   * There is only this adapter level. The setting belongs to the engine.
+   */
+  private boolean modelerEnabled = false;
 
   /**
    * What the engine does to its schema on boot, e.g. <code>true</code>,
@@ -407,6 +420,25 @@ public class CibSevenEngineProperties {
   public void setDmnFeelLegacyBehavior(
       final boolean dmnFeelLegacyBehavior) {
     this.dmnFeelLegacyBehavior = dmnFeelLegacyBehavior;
+  }
+
+  /**
+   * Whether the engine runs the tables of CIB seven's modeler.
+   *
+   * @return Whether the modeler's tables are created and checked
+   */
+  public boolean isModelerEnabled() {
+    return modelerEnabled;
+  }
+
+  /**
+   * Whether the engine runs the tables of CIB seven's modeler.
+   *
+   * @param modelerEnabled Whether the modeler's tables are created and checked
+   */
+  public void setModelerEnabled(
+      final boolean modelerEnabled) {
+    this.modelerEnabled = modelerEnabled;
   }
 
   /**

@@ -323,7 +323,7 @@ public class CibSevenEngineHolder implements CibSevenWorkflowProcessingLifecycle
       configuration.setDatabaseTablePrefix(properties.getTablePrefix());
     }
 
-    // the engine plugins. This is how a serialization dataformat (camunda-xstream, SPIN)
+    // the engine plugins. This is how a serialization dataformat such as SPIN
     // reaches an embedded engine. There are two ways in. One is the configuration per
     // adapter id ('vanillabp.adapters.<id>.engine-plugins'), whose properties Camunda
     // applies itself. The other is a bean. That suits a plugin which configures itself
@@ -360,6 +360,10 @@ public class CibSevenEngineHolder implements CibSevenWorkflowProcessingLifecycle
     // the FEEL implementation decisions are evaluated with. The older one needs no FEEL
     // engine library, which is what an application needs next to the Operaton adapter
     io.vanillabp.cibseven.engine.CibSevenDmnFeelLegacyBehavior.applyTo(adapterId, configuration, properties);
+
+    // CIB seven's modeler tables. The engine's default would create and check them, and
+    // with a table prefix it would refuse to start on a schema without them
+    io.vanillabp.cibseven.engine.CibSevenModeler.applyTo(adapterId, configuration, properties);
 
     // what an extension contributes to THIS engine: parse listeners before or after
     // VanillaBP's own, and a history event handler installed next to the engine's

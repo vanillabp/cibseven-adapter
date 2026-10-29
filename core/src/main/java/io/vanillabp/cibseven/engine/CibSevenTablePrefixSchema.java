@@ -118,7 +118,7 @@ public final class CibSevenTablePrefixSchema {
       throw new IllegalStateException(
           """
               CIB seven adapter '%s' is configured with the table prefix '%s' \
-              ('vanillabp.adapters.%s.table-prefix') and 'database-schema-update: %s'. Camunda \
+              ('vanillabp.adapters.%s.table-prefix') and 'database-schema-update: %s'. CIB seven \
               cannot create prefixed tables: its schema management executes the DDL shipped with \
               the engine, and those statements name the tables verbatim, so it would create a set \
               of ACT_* tables in %s - not the tables this adapter id reads. %s"""
@@ -131,13 +131,13 @@ public final class CibSevenTablePrefixSchema {
                   waysOn(adapterId, tablePrefix)));
     }
 
-    final var missing = missingTables(dataSource, tablePrefix);
+    final var missing = missingTables(dataSource, tablePrefix, properties.isModelerEnabled());
     if (!missing.isEmpty()) {
       throw new IllegalStateException(
           """
               CIB seven adapter '%s' runs on the table prefix '%s' \
               ('vanillabp.adapters.%s.table-prefix') in %s, but these tables of it are missing: \
-              %s. A prefixed engine needs a schema which is there already, because Camunda's own \
+              %s. A prefixed engine needs a schema which is there already, because CIB seven's own \
               schema management ignores the prefix. %s"""
               .formatted(
                   adapterId,
@@ -202,6 +202,25 @@ public final class CibSevenTablePrefixSchema {
       final DataSource dataSource,
       final String tablePrefix) {
 
+    return missingTables(dataSource, tablePrefix, false);
+
+  }
+
+  /**
+   * Which of the engine's component tables are missing under the prefix, the table of CIB
+   * seven's modeler included where the modeler is switched on. The engine checks that table
+   * only then, see {@link CibSevenModeler}.
+   *
+   * @param dataSource The engine's datasource
+   * @param tablePrefix The configured prefix
+   * @param modelerEnabled Whether the engine runs the modeler's tables
+   * @return The missing tables, prefix included, in the engine's own order
+   */
+  static List<String> missingTables(
+      final DataSource dataSource,
+      final String tablePrefix,
+      final boolean modelerEnabled) {
+
     final var dot = tablePrefix.indexOf('.');
     final var schema = dot < 0
         ? null
@@ -213,7 +232,11 @@ public final class CibSevenTablePrefixSchema {
     final var missing = new LinkedList<String>();
     try (Connection connection = dataSource.getConnection()) {
       final var metaData = connection.getMetaData();
-      for (final var table : COMPONENT_TABLES.values()) {
+      final var tables = new java.util.ArrayList<>(COMPONENT_TABLES.values());
+      if (modelerEnabled) {
+        tables.add(CibSevenModeler.MODELER_TABLE);
+      }
+      for (final var table : tables) {
         final var tableName = prefixWithoutSchema + table;
         if (!tableExists(metaData, schema, tableName)) {
           missing.add(tablePrefix + table);

@@ -14,11 +14,8 @@ import java.util.Map;
  *   adapters:
  *     cibseven:
  *       engine-plugins:
- *         xstream:
- *           plugin-class: org.camunda.xstream.ProcessEnginePlugin
- *           properties:
- *             encoding: UTF-8
- *             allowed-types: my.project.**,other.project.**
+ *         spin:
+ *           plugin-class: org.cibseven.spin.plugin.impl.SpinProcessEnginePlugin
  * </pre>
  */
 public class CibSevenEnginePluginProperties {
@@ -39,7 +36,7 @@ public class CibSevenEnginePluginProperties {
 
   /**
    * The class Camunda instantiates for this plugin section, e.g.
-   * <code>org.camunda.xstream.ProcessEnginePlugin</code>.
+   * <code>org.cibseven.spin.plugin.impl.SpinProcessEnginePlugin</code>.
    *
    * @return The class name, <code>null</code> where the section names none
    */
