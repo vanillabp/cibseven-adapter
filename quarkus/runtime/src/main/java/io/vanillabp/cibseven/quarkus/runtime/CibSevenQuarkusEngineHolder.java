@@ -195,6 +195,10 @@ public class CibSevenQuarkusEngineHolder implements CibSevenWorkflowProcessingLi
     // the FEEL implementation decisions are evaluated with. The older one needs no FEEL
     // engine library, which is what an application needs next to the Operaton adapter
     io.vanillabp.cibseven.engine.CibSevenDmnFeelLegacyBehavior.applyTo(adapterId, configuration, properties);
+
+    // CIB seven's modeler tables. The engine's default would create and check them, and
+    // with a table prefix it would refuse to start on a schema without them
+    io.vanillabp.cibseven.engine.CibSevenModeler.applyTo(adapterId, configuration, properties);
     // job-executor threads must load delegate classes through the Quarkus runtime
     // classloader. Otherwise they fail with ClassNotFoundException; we have seen it
     configuration.setClassLoader(Thread.currentThread().getContextClassLoader());

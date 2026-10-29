@@ -131,7 +131,7 @@ public final class CibSevenTablePrefixSchema {
                   waysOn(adapterId, tablePrefix)));
     }
 
-    final var missing = missingTables(dataSource, tablePrefix);
+    final var missing = missingTables(dataSource, tablePrefix, properties.isModelerEnabled());
     if (!missing.isEmpty()) {
       throw new IllegalStateException(
           """
@@ -202,6 +202,25 @@ public final class CibSevenTablePrefixSchema {
       final DataSource dataSource,
       final String tablePrefix) {
 
+    return missingTables(dataSource, tablePrefix, false);
+
+  }
+
+  /**
+   * Which of the engine's component tables are missing under the prefix, the table of CIB
+   * seven's modeler included where the modeler is switched on. The engine checks that table
+   * only then, see {@link CibSevenModeler}.
+   *
+   * @param dataSource The engine's datasource
+   * @param tablePrefix The configured prefix
+   * @param modelerEnabled Whether the engine runs the modeler's tables
+   * @return The missing tables, prefix included, in the engine's own order
+   */
+  static List<String> missingTables(
+      final DataSource dataSource,
+      final String tablePrefix,
+      final boolean modelerEnabled) {
+
     final var dot = tablePrefix.indexOf('.');
     final var schema = dot < 0
         ? null
@@ -213,7 +232,11 @@ public final class CibSevenTablePrefixSchema {
     final var missing = new LinkedList<String>();
     try (Connection connection = dataSource.getConnection()) {
       final var metaData = connection.getMetaData();
-      for (final var table : COMPONENT_TABLES.values()) {
+      final var tables = new java.util.ArrayList<>(COMPONENT_TABLES.values());
+      if (modelerEnabled) {
+        tables.add(CibSevenModeler.MODELER_TABLE);
+      }
+      for (final var table : tables) {
         final var tableName = prefixWithoutSchema + table;
         if (!tableExists(metaData, schema, tableName)) {
           missing.add(tablePrefix + table);

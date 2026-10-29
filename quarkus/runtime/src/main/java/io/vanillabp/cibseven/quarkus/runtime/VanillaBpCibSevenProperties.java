@@ -409,6 +409,14 @@ public interface VanillaBpCibSevenProperties {
      */
     Optional<Boolean> dmnFeelLegacyBehavior();
 
+    /**
+     * OPTIONAL: whether the engine runs the tables of CIB seven's modeler. The default is
+     * <code>false</code>, unlike the engine's own default. See {@code CibSevenModeler}.
+     *
+     * @return The configured answer, empty for <code>false</code>
+     */
+    Optional<Boolean> modelerEnabled();
+
   }
 
 }

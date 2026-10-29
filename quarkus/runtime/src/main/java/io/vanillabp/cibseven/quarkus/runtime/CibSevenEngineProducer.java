@@ -153,6 +153,7 @@ public class CibSevenEngineProducer {
     keys.sleepUntilSomethingIsDue().ifPresent(properties::setSleepUntilSomethingIsDue);
     keys.dbMetricsReporting().ifPresent(properties::setDbMetricsReporting);
     keys.dmnFeelLegacyBehavior().ifPresent(properties::setDmnFeelLegacyBehavior);
+    keys.modelerEnabled().ifPresent(properties::setModelerEnabled);
     // the named plugin sections are copied onto the platform-neutral model. So the core
     // builds and configures them the same way on both platforms
     properties

@@ -65,6 +65,12 @@
       "type": "java.lang.Boolean",
       "description": "Whether the engine evaluates decisions with its older FEEL implementation, which needs no FEEL engine library. An application which runs the Operaton adapter next to this one needs it, together with an exclusion of 'org.camunda.feel:feel-engine'. Only the adapter level exists, because the setting belongs to the engine.",
       "defaultValue": false
+    },
+    {
+      "name": "vanillabp.adapters.cibseven.modeler-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether the engine creates and checks the tables of CIB seven's modeler (MOD_* and CHAT_MESSAGES). VanillaBP does not use the modeler, so the default is false, unlike the engine's own default. With a table prefix and 'true', the prefixed modeler tables have to exist. Only the adapter level exists, because the setting belongs to the engine.",
+      "defaultValue": false
     }
   ]
 }
