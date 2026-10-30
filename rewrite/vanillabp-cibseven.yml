@@ -554,8 +554,14 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7ModelledListenerTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenModelledListenerTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7NamedDataSourceWithoutXaTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenNamedDataSourceWithoutXaTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7NamesWhichHideNoTaskTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenNamesWhichHideNoTaskTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7OnlyANamedDataSourceTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenOnlyANamedDataSourceTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7PrefixWithoutItsTablesTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenPrefixWithoutItsTablesTest
@@ -599,8 +605,14 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7WithoutOutboxTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenWithoutOutboxTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7WorkflowEnd
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenWorkflowEnd
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7WorkflowEndedTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenWorkflowEndedTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7XaOnTheApplicationDataSourceTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenXaOnTheApplicationDataSourceTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7DmnFeelLegacyBehaviorTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenDmnFeelLegacyBehaviorTest
