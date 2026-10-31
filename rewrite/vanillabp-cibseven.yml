@@ -170,6 +170,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.Camunda7Listeners
       newFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.CibSevenListeners
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.Camunda7MessageTimeToLiveResolver
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.CibSevenMessageTimeToLiveResolver
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.Camunda7ProcessVersions
       newFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.CibSevenProcessVersions
   - org.openrewrite.java.ChangeType:
@@ -350,6 +353,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.processservice.Camunda7ViewerOfACalledProcessTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.processservice.CibSevenViewerOfACalledProcessTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.processservice.Camunda7WaitForASubscriptionTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.processservice.CibSevenWaitForASubscriptionTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.processservice.Camunda7WorkflowViewerTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.processservice.CibSevenWorkflowViewerTest
   - org.openrewrite.java.ChangeType:
@@ -430,6 +436,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7LossyFormatCheckIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenLossyFormatCheckIT
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7MessageTimeToLiveIT
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenMessageTimeToLiveIT
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7MissingDeliveryLogIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenMissingDeliveryLogIT
