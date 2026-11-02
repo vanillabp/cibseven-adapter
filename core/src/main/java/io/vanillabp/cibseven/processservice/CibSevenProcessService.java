@@ -11,7 +11,6 @@ import io.vanillabp.cibseven.sync.CibSevenSerializationFormats;
 import io.vanillabp.cibseven.sync.CibSevenValueTypes;
 import io.vanillabp.cibseven.sync.CibSevenVariables;
 import io.vanillabp.cibseven.wiring.CibSevenConfiguredTenant;
-import io.vanillabp.cibseven.wiring.CibSevenMessageTimeToLiveResolver;
 import io.vanillabp.cibseven.wiring.CibSevenScoping;
 import io.vanillabp.cibseven.wiring.CibSevenTaskRegistry;
 import io.vanillabp.cibseven.wiring.CibSevenWorkflowTaskBehavior;
@@ -323,18 +322,50 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
    * How long a correlation waits for a subscription, per message. <code>null</code> in
    * tests, and then no message has a time-to-live.
    */
-  private CibSevenMessageTimeToLiveResolver messageTimeToLiveResolver;
+  private io.vanillabp.integration.adapter.spi.MessageTimeToLiveResolver messageTimeToLiveResolver;
 
   /**
    * Hands over how long a correlation waits for a subscription. The platform integration
    * binds the configuration, so it arrives after construction.
    *
-   * @param messageTimeToLiveResolver The resolution of the platform integration
+   * @param messageTimeToLiveResolver The resolution of the platform
    */
   public void setMessageTimeToLiveResolver(
-      final CibSevenMessageTimeToLiveResolver messageTimeToLiveResolver) {
+      final io.vanillabp.integration.adapter.spi.MessageTimeToLiveResolver messageTimeToLiveResolver) {
 
     this.messageTimeToLiveResolver = messageTimeToLiveResolver;
+
+  }
+
+  /**
+   * Ends the boot where a <code>message-time-to-live</code> is below zero. Zero is allowed. It
+   * switches the waiting off for a scope below one which switched it on. The platform says
+   * which values were written. What this engine can do with them is checked here.
+   *
+   * @param adapterId The adapter id the values belong to
+   * @param written Every time-to-live written for this adapter, keyed by its property key
+   * @throws IllegalStateException Naming the keys and the way out
+   */
+  public static void refuseNegativeMessageTimesToLive(
+      final String adapterId,
+      final Map<String, Duration> written) {
+
+    final var negativeKeys = written
+        .entrySet()
+        .stream()
+        .filter(entry -> entry.getValue().isNegative())
+        .map(entry -> "%s=%s".formatted(entry.getKey(), entry.getValue()))
+        .toList();
+    if (negativeKeys.isEmpty()) {
+      return;
+    }
+    throw new IllegalStateException(
+        """
+            Adapter '%s' found a message time-to-live below zero: %s! It says how long a \
+            correlated message waits for the workflow to reach the point where it waits for \
+            it. Write a duration like '10m', or '0s' to refuse a correlation nothing waits for \
+            where the application made the call."""
+            .formatted(adapterId, String.join(", ", negativeKeys)));
 
   }
 
@@ -351,23 +382,15 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
     if (messageTimeToLiveResolver == null) {
       return Duration.ZERO;
     }
-    final var ofTheCall = messageTimeToLiveResolver.messageTimeToLiveFor(workflowModuleId, bpmnProcessId, messageName);
-    // the models are read only where the processes of the module would answer differently.
-    // Most applications configure the time-to-live per adapter or per module, or not at all
     final var processes = taskRegistry == null
         ? Map.<String, String>of()
         : taskRegistry.scopedProcessIdsOf(workflowModuleId);
-    final var configured = processes
-        .keySet()
-        .stream()
-        .allMatch(process -> java.util.Objects
-            .equals(ofTheCall, messageTimeToLiveResolver.messageTimeToLiveFor(workflowModuleId, process, messageName)))
-                ? ofTheCall
-                : messageTimeToLiveResolver
-                    .messageTimeToLiveFor(
-                        workflowModuleId,
-                        processWaitingForTheMessage(workflowModuleId, bpmnProcessId, messageName),
-                        messageName);
+    final var configured = messageTimeToLiveResolver.resolveFor(
+        workflowModuleId,
+        bpmnProcessId,
+        messageName,
+        processes.keySet(),
+        () -> modelsWaitingFor(workflowModuleId, messageName).waiting());
     return configured == null
         ? Duration.ZERO
         : configured;
@@ -1115,10 +1138,10 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
               CibSeven[%s]: nothing waited for %s within its message time-to-live of %s. It waited \
               %s since it was planned at %s. Check whether the workflow still reaches the point \
               where it waits for this message, or give the message a longer time-to-live \
-              (vanillabp.workflow-modules.%s.workflows.<bpmn-process-id>.messages.%s.adapters.%s.message-time-to-live)."""
+              (vanillabp.workflow-modules.%s.workflows.<bpmn-process-id>.messages.%s.message-time-to-live)."""
               .formatted(
                   adapterId, subject, timeToLive, waited, plannedAt, request.workflowModuleId(),
-                  request.messageName(), adapterId), null);
+                  request.messageName()), null);
     }
     return new PhaseTwoRetryLater(
         "CibSeven[%s]: nothing waits for %s yet. It is tried again until its message time-to-live of %s is over"
@@ -1273,37 +1296,6 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
 
   }
 
-  /**
-   * The BPMN process whose model waits for a message, which is the process a time-to-live
-   * configured for that message belongs to.
-   * <p>
-   * A process service belongs to the process at the top, so the correlation names that
-   * process. But the event which waits may sit in a called process. Whoever configures the
-   * time-to-live of that message writes it under the called process
-   * (<code>workflows.&lt;called process&gt;.messages.&lt;message&gt;</code>). So the deployed
-   * models answer, the way the Camunda 8 adapter answers it. It is the process of the call,
-   * if its own model waits for the message. Otherwise it is the one other process of the
-   * workflow module whose model does. If none does, or several others do, the process of the
-   * call is the answer.
-   *
-   * @param workflowModuleId The workflow module of the correlation
-   * @param bpmnProcessId The BPMN process of the call
-   * @param messageName The message name as the application wrote it
-   * @return The plain id of the process the time-to-live is read for
-   */
-  private String processWaitingForTheMessage(
-      final String workflowModuleId,
-      final String bpmnProcessId,
-      final String messageName) {
-
-    final var waiting = modelsWaitingFor(workflowModuleId, messageName).waiting();
-    if (waiting.contains(bpmnProcessId) || (waiting.size() != 1)) {
-      return bpmnProcessId;
-    }
-    return waiting.getFirst();
-
-  }
-
   private void pushChangedAggregate(
       final PhaseTwoRequest<A> request) {
 
@@ -1340,6 +1332,14 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
     // The third is a start of a process the engine does not hold. It is a case of its
     // own. The engine reports it with an exception which is repeatable for every other
     // operation. So the start marks its own refusal (CibSevenRefusedStart).
+    //
+    // A suspended workflow is none of these, although the engine reports it with a subtype of
+    // BadUserRequestException. The same answer goes through once the workflow is resumed. The
+    // phase-two operations ask for the suspension before they act and wait for it, so this is
+    // only the net under that question
+    if (CibSevenSuspendedWorkflow.isASuspension(failure)) {
+      return true;
+    }
     var candidate = failure;
     while (candidate != null) {
       if (candidate instanceof CibSevenRefusedStart) {
@@ -1904,11 +1904,11 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
       // check BEFORE signaling. A failing engine command would mark the joined
       // transaction rollback-only, even if the exception is caught. Then the outbox
       // dispatcher's transaction could never commit the DONE entry
-      final var exists = runtimeService
+      final var execution = runtimeService
           .createExecutionQuery()
           .executionId(taskId)
-          .count() > 0;
-      if (!exists) {
+          .singleResult();
+      if (execution == null) {
         // the task disappeared before this signal. Phase one found it, so a repeated
         // dispatch finds it ended by the first one
         log.warn(
@@ -1921,18 +1921,34 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
                 : "cancellation");
         return;
       }
+      if (execution.isSuspended()) {
+        // asked before the signal for the same reason as above. The engine would refuse it
+        throw CibSevenSuspendedWorkflow.waitInTheOutbox(adapterId, "task", taskId, bpmnErrorCode == null
+            ? "completion"
+            : "cancellation");
+      }
     }
-    if (beforeSignal != null) {
-      beforeSignal.run();
-    }
-    if (bpmnErrorCode == null) {
-      runtimeService.signal(taskId);
-    } else {
-      runtimeService.signal(
-          taskId,
-          CibSevenWorkflowTaskBehavior.SIGNAL_CANCEL,
-          bpmnErrorCode,
-          java.util.Map.of());
+    try {
+      if (beforeSignal != null) {
+        beforeSignal.run();
+      }
+      if (bpmnErrorCode == null) {
+        runtimeService.signal(taskId);
+      } else {
+        runtimeService.signal(
+            taskId,
+            CibSevenWorkflowTaskBehavior.SIGNAL_CANCEL,
+            bpmnErrorCode,
+            java.util.Map.of());
+      }
+    } catch (final RuntimeException e) {
+      // somebody suspended the workflow between the query and the signal
+      if (tolerateGoneTask && CibSevenSuspendedWorkflow.isASuspension(e)) {
+        throw CibSevenSuspendedWorkflow.waitInTheOutbox(adapterId, "task", taskId, bpmnErrorCode == null
+            ? "completion"
+            : "cancellation");
+      }
+      throw e;
     }
 
   }
@@ -1987,11 +2003,11 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
     if (tolerateGoneTask) {
       // check BEFORE executing, see signalTask. A failing engine command would
       // mark the joined transaction rollback-only, even if the exception is caught
-      final var exists = taskService
+      final var task = taskService
           .createTaskQuery()
           .taskId(taskId)
-          .count() > 0;
-      if (!exists) {
+          .singleResult();
+      if (task == null) {
         // a repeated dispatch, see signalTask
         log.warn(
             "CibSeven[{}]: user task '{}' is gone - skipping the phase-two {}. The outbox "
@@ -2003,15 +2019,30 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
                 : "cancellation");
         return;
       }
+      if (task.isSuspended()) {
+        throw CibSevenSuspendedWorkflow.waitInTheOutbox(adapterId, "user task", taskId, bpmnErrorCode == null
+            ? "completion"
+            : "cancellation");
+      }
     }
-    if (beforeExecute != null) {
-      beforeExecute.run();
-    }
-    if (bpmnErrorCode == null) {
-      taskService.complete(taskId);
-    } else {
-      // routes the workflow through an error boundary event on the user task
-      taskService.handleBpmnError(taskId, bpmnErrorCode);
+    try {
+      if (beforeExecute != null) {
+        beforeExecute.run();
+      }
+      if (bpmnErrorCode == null) {
+        taskService.complete(taskId);
+      } else {
+        // routes the workflow through an error boundary event on the user task
+        taskService.handleBpmnError(taskId, bpmnErrorCode);
+      }
+    } catch (final RuntimeException e) {
+      // somebody suspended the workflow between the query and the command, see signalTask
+      if (tolerateGoneTask && CibSevenSuspendedWorkflow.isASuspension(e)) {
+        throw CibSevenSuspendedWorkflow.waitInTheOutbox(adapterId, "user task", taskId, bpmnErrorCode == null
+            ? "completion"
+            : "cancellation");
+      }
+      throw e;
     }
 
   }
@@ -2097,17 +2128,20 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
       final String taskId,
       final String operationDescription) {
 
-    final var exists = runtimeService
+    final var execution = runtimeService
         .createExecutionQuery()
         .executionId(taskId)
-        .count() > 0;
-    if (!exists) {
+        .singleResult();
+    if (execution == null) {
       throw new io.vanillabp.spi.process.TaskNotFoundException(
           """
               The task '%s' is gone (completed or canceled meanwhile) - aborting the transaction %s \
               it! VanillaBP progresses the workflow after the commit, so a task which no longer \
               exists cannot be reached any more."""
               .formatted(taskId, operationDescription));
+    }
+    if (execution.isSuspended()) {
+      throw CibSevenSuspendedWorkflow.refuseTheCall(adapterId, "task", taskId, operationDescription);
     }
 
   }
@@ -2123,17 +2157,20 @@ public class CibSevenProcessService<A> implements MigratableProcessService<A> {
       final String taskId,
       final String operationDescription) {
 
-    final var exists = taskService
+    final var task = taskService
         .createTaskQuery()
         .taskId(taskId)
-        .count() > 0;
-    if (!exists) {
+        .singleResult();
+    if (task == null) {
       throw new io.vanillabp.spi.process.TaskNotFoundException(
           """
               The user task '%s' is gone (completed or canceled meanwhile) - aborting the \
               transaction %s it! VanillaBP progresses the workflow after the commit, so a task \
               which no longer exists cannot be reached any more."""
               .formatted(taskId, operationDescription));
+    }
+    if (task.isSuspended()) {
+      throw CibSevenSuspendedWorkflow.refuseTheCall(adapterId, "user task", taskId, operationDescription);
     }
 
   }
