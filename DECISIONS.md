@@ -190,7 +190,7 @@ for two reasons:
   Community Hub, which wants a login even for reading. Modules of their own keep that need to two
   places. Every other module builds without the login.
 
-Both modules name that registry under the id `camunda-community-hub-vanillabp-camunda7-adapter`. A
+Both modules name that registry under the id `vanillabp-camunda7-adapter`. A
 build needs a server entry with that id and a token with `read:packages`. Once the Camunda 7 adapter
 has a release on Maven Central, the modules use it and the registry goes away. The coverage report
 of each platform reads the execution data of its module.
