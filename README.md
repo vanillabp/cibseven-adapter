@@ -53,15 +53,15 @@ The decisions the generated code cites are those of the Camunda 7 adapter. The c
 
 What differs from the Camunda 7 adapter:
 
-|       Where       |                   Camunda 7 adapter                   |                           This adapter                            |
-|-------------------|-------------------------------------------------------|-------------------------------------------------------------------|
-| engine            | Camunda 7.24, `org.camunda.bpm`                       | CIB seven 2.2, `org.cibseven.bpm`                                 |
-| adapter type      | `camunda7`                                            | `cibseven`                                                        |
-| artifacts         | `io.vanillabp:camunda7-adapter...`                    | `io.vanillabp:cibseven-adapter...`                                |
-| version           | `2.0.0`                                               | `2.0.0-2.2`, with the CIB seven minor                             |
-| modeler tables    | none                                                  | off by default, key `modeler-enabled`                             |
-| web applications  | `/camunda`                                            | `/camunda`, and the webclient needs a secret                      |
-| deployment source | `camunda7:<id>`                                       | `cibseven:<id>`, and `camunda7:` and `operaton:` count as its own |
+|       Where       |         Camunda 7 adapter          |                           This adapter                            |
+|-------------------|------------------------------------|-------------------------------------------------------------------|
+| engine            | Camunda 7.24, `org.camunda.bpm`    | CIB seven 2.2, `org.cibseven.bpm`                                 |
+| adapter type      | `camunda7`                         | `cibseven`                                                        |
+| artifacts         | `io.vanillabp:camunda7-adapter...` | `io.vanillabp:cibseven-adapter...`                                |
+| version           | `2.0.0`                            | `2.0.0-2.2`, with the CIB seven minor                             |
+| modeler tables    | none                               | off by default, key `modeler-enabled`                             |
+| web applications  | `/camunda`                         | `/camunda`, and the webclient needs a secret                      |
+| deployment source | `camunda7:<id>`                    | `cibseven:<id>`, and `camunda7:` and `operaton:` count as its own |
 
 The BPMN namespace does not change. CIB seven reads only `http://camunda.org/schema/1.0/bpmn`, the
 `camunda:` attributes of a model written for Camunda 7, and has no namespace of its own.
