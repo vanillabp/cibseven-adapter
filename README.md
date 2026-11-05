@@ -33,7 +33,7 @@ for contributors.
 ## How this adapter relates to the Camunda 7 adapter
 
 The code of this adapter is made from the
-[Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter) with an
+[Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter) with an
 OpenRewrite recipe, `rewrite/vanillabp-cibseven.yml`. The recipe renames what belongs to the engine
 and gives the adapter its own names (decision 4 in the repository's DECISIONS.md). A few commits on
 top handle what CIB seven does differently. The branch `generated` holds what the recipe made, and
@@ -41,7 +41,7 @@ top handle what CIB seven does differently. The branch `generated` holds what th
 which commit of the Camunda 7 adapter the code is made from: `generated from C7 <sha>`.
 
 So this adapter behaves like the Camunda 7 adapter, with CIB seven as the engine. The
-[README of the Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter#readme)
+[README of the Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter#readme)
 describes that behaviour section by section, and every section of it holds here: the task processing,
 the outbound operations, the sharing of the workflow aggregate, the versions of a process, Quarkus in
 JVM mode only, and the rest. Read "Camunda 7" there as "CIB seven", `camunda7` as `cibseven` and
@@ -53,15 +53,15 @@ The decisions the generated code cites are those of the Camunda 7 adapter. The c
 
 What differs from the Camunda 7 adapter:
 
-|       Where       |                   Camunda 7 adapter                   |                           This adapter                            |
-|-------------------|-------------------------------------------------------|-------------------------------------------------------------------|
-| engine            | Camunda 7.24, `org.camunda.bpm`                       | CIB seven 2.2, `org.cibseven.bpm`                                 |
-| adapter type      | `camunda7`                                            | `cibseven`                                                        |
-| artifacts         | `org.camunda.community.vanillabp:camunda7-adapter...` | `io.vanillabp:cibseven-adapter...`                                |
-| version           | `2.0.0`                                               | `2.0.0-2.2`, with the CIB seven minor                             |
-| modeler tables    | none                                                  | off by default, key `modeler-enabled`                             |
-| web applications  | `/camunda`                                            | `/camunda`, and the webclient needs a secret                      |
-| deployment source | `camunda7:<id>`                                       | `cibseven:<id>`, and `camunda7:` and `operaton:` count as its own |
+|       Where       |         Camunda 7 adapter          |                           This adapter                            |
+|-------------------|------------------------------------|-------------------------------------------------------------------|
+| engine            | Camunda 7.24, `org.camunda.bpm`    | CIB seven 2.2, `org.cibseven.bpm`                                 |
+| adapter type      | `camunda7`                         | `cibseven`                                                        |
+| artifacts         | `io.vanillabp:camunda7-adapter...` | `io.vanillabp:cibseven-adapter...`                                |
+| version           | `2.0.0`                            | `2.0.0-2.2`, with the CIB seven minor                             |
+| modeler tables    | none                               | off by default, key `modeler-enabled`                             |
+| web applications  | `/camunda`                         | `/camunda`, and the webclient needs a secret                      |
+| deployment source | `camunda7:<id>`                    | `cibseven:<id>`, and `camunda7:` and `operaton:` count as its own |
 
 The BPMN namespace does not change. CIB seven reads only `http://camunda.org/schema/1.0/bpmn`, the
 `camunda:` attributes of a model written for Camunda 7, and has no namespace of its own.
@@ -150,7 +150,7 @@ after the setters of the engine configuration, which CIB seven kept:
 `database-schema-update`, `history-time-to-live`, `data-source-name`, `table-prefix`,
 `serialization-format`, `engine-plugins`, `tenant-id`, `accept-unscoped-identifiers`,
 `allow-listeners`, `sleep-until-something-is-due`, `db-metrics-reporting` and
-`dmn-feel-legacy-behavior`. The [README of the Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter#configuration)
+`dmn-feel-legacy-behavior`. The [README of the Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter#configuration)
 describes each of them. The adapter reads none of CIB seven's own keys (`camunda.bpm.*`,
 `quarkus.cibseven.*`), because it does not use CIB seven's starter or extension.
 
