@@ -198,3 +198,27 @@ of each platform reads the execution data of its module.
 The modules publish nothing, but each builds its empty jar and leaves itself out of the bundle for
 Maven Central with `excludeArtifacts`. The publishing plugin stops the whole publish when a module
 of the reactor assigns no file.
+
+### 9. The Camunda 7 adapter comes from `vanillabp/camunda7-adapter` as `io.vanillabp`
+
+Proposed by story 2085. It changes decisions 2, 4 and 8.
+
+**Why.** Since story 2083 the Camunda 7 adapter is built in `vanillabp/camunda7-adapter` again. Its
+artifacts have the groupId `io.vanillabp`, and its snapshots go to the snapshot repository of Maven
+Central. The copy in the Camunda Community Hub is frozen and holds only version 1.
+
+**What holds.**
+
+- `bin/sync-from-camunda7.sh` clones `vanillabp/camunda7-adapter` by default.
+- Decision 2: the recipe no longer renames a groupId, because both adapters use `io.vanillabp`. The
+  rule `camunda7` -> `cibseven` renames the artifactIds `io.vanillabp:camunda7-*` and the links to
+  the repository and its wiki. No artifact of `spi-for-java` or of the platform has `camunda7` in its
+  name, so the rule leaves them alone. A mention of version 1 in the Camunda Community Hub stays as
+  it is. `org.cibseven.ReplaceCamundaWithCIBSeven` is still not used, because of the FEEL engine
+  `org.camunda.feel` and the package of the extension elements.
+- Decision 4: the groupId row of the table reads `io.vanillabp` on both sides. The artifactIds keep
+  the two adapters apart.
+- Decision 8: the migration modules take the Camunda 7 adapter from the snapshot repository of Maven
+  Central, like every other VanillaBP snapshot. There is no GitHub Packages registry, no server entry
+  and no token any more. The modules stay modules of their own for the first reason of decision 8.
+
