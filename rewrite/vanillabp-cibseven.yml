@@ -12,9 +12,9 @@
 #     application, and that is how an application moves from Camunda 7 to CIB seven.
 #
 # CIB seven publishes a recipe of its own, 'org.cibseven.ReplaceCamundaWithCIBSeven'. It is
-# not used: it renames every 'org.camunda', so it would also rename the groupId
-# 'org.camunda.community.vanillabp' and the FEEL engine 'org.camunda.feel', which CIB seven
-# shares with Camunda, and it does not know the package of the extension elements.
+# not used: it renames every 'org.camunda', so it would also rename the FEEL engine
+# 'org.camunda.feel', which CIB seven shares with Camunda, and it does not know the package of
+# the extension elements.
 #
 # What stays as it is: the BPMN namespace 'http://camunda.org/schema/1.0/bpmn' and every
 # 'camunda:' attribute, because CIB seven reads only that namespace. The FEEL engine
@@ -835,7 +835,7 @@ recipeList:
       regex: true
       filePattern: pom.xml
   - org.openrewrite.text.FindAndReplace:
-      find: '(<groupId>org\.camunda\.community\.vanillabp</groupId>\s*<artifactId>camunda7-adapter[a-z-]*</artifactId>\s*<version>\d+\.\d+\.\d+)(-SNAPSHOT)?</version>'
+      find: '(<groupId>io\.vanillabp</groupId>\s*<artifactId>camunda7-adapter[a-z-]*</artifactId>\s*<version>\d+\.\d+\.\d+)(-SNAPSHOT)?</version>'
       replace: '$1-2.2$2</version>'
       caseSensitive: true
       regex: true
@@ -846,17 +846,6 @@ name: io.vanillabp.cibseven.Camunda7NamesInText
 displayName: VanillaBP's names in strings, comments and resources
 description: What no Java recipe sees. Strings, comments, POMs, YAML, properties, JSON, BPMN and DMN files.
 recipeList:
-  # The repository first, before 'camunda7' below turns it into a name nobody uses.
-  - org.openrewrite.text.FindAndReplace:
-      find: camunda-community-hub/vanillabp-camunda7-adapter
-      replace: vanillabp/cibseven-adapter
-      caseSensitive: true
-  # The groupId. The Camunda Community Hub owns 'org.camunda.community', and CIB seven is not
-  # a Camunda project.
-  - org.openrewrite.text.FindAndReplace:
-      find: org.camunda.community.vanillabp
-      replace: io.vanillabp
-      caseSensitive: true
   # Class names in strings and in resources, and the nested classes, which the type renames
   # above do not list. Also the log prefix 'Camunda7[...]' and the bean names
   # 'Camunda7_ProcessEngine_<id>'.
@@ -868,12 +857,18 @@ recipeList:
       find: CAMUNDA7
       replace: CIBSEVEN
       caseSensitive: true
-  # The adapter type, the artifactIds, the engine names 'vanillabp-camunda7-<id>', the
-  # Quarkus extension name and its capability 'io.vanillabp.adapter.camunda7'.
+  # The adapter type, the artifactIds 'io.vanillabp:camunda7-*', the engine names
+  # 'vanillabp-camunda7-<id>', the Quarkus extension name and its capability
+  # 'io.vanillabp.adapter.camunda7', and the repository 'vanillabp/camunda7-adapter' with its
+  # wiki. No artifact of spi-for-java or of the platform has 'camunda7' in its name. Version 1
+  # of the Camunda 7 adapter, in 'camunda-community-hub/vanillabp-camunda7-adapter', stays as
+  # it is: a decision of the Camunda 7 adapter may name it, and there is no CIB seven adapter
+  # of version 1.
   - org.openrewrite.text.FindAndReplace:
-      find: camunda7
+      find: '(?<!camunda-community-hub/vanillabp-)camunda7'
       replace: cibseven
       caseSensitive: true
+      regex: true
   # Javadoc, comments, messages and the names of the Maven modules. A version number stays as
   # it is: 'Camunda 7.24' is a fact about Camunda. So does what is said about the forks of
   # Camunda 7 and its family, and the name of the log a decision is cited from, which the last
