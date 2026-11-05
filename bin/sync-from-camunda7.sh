@@ -26,7 +26,7 @@
 #   bin/sync-from-camunda7.sh <camunda7 commit or tag>
 #
 # Environment:
-#   C7_REPOSITORY   where the Camunda 7 adapter is cloned from (default: the hub repository).
+#   C7_REPOSITORY   where the Camunda 7 adapter is cloned from (default: vanillabp/camunda7-adapter).
 #                   A path to a local clone works too.
 #   COMMIT_TRAILER  a last paragraph for the commit message, for instance a Co-Authored-By
 #                   line (default: none)
@@ -76,7 +76,7 @@ c7_ref=$1
 
 # CDPATH is cleared because cd prints the directory it found through CDPATH.
 repository=$(CDPATH= cd -- "$(dirname "$0")/.." && pwd)
-c7_repository=${C7_REPOSITORY:-https://github.com/camunda-community-hub/vanillabp-camunda7-adapter.git}
+c7_repository=${C7_REPOSITORY:-https://github.com/vanillabp/camunda7-adapter.git}
 
 work=$(mktemp -d)
 echo "Working in $work"

@@ -10,7 +10,7 @@ adapter. An application is written against
 its users.
 
 Most of the code here is not written but made from the
-[Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter), see
+[Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter), see
 [Following the Camunda 7 adapter](#following-the-camunda-7-adapter). Read that section before you
 change a line which came from there.
 
@@ -89,29 +89,9 @@ from the snapshot repository of Maven Central, `https://central.sonatype.com/rep
 The parent POM `io.vanillabp:release-parent` names that repository, and reading it needs no login.
 Every push to `main` of this repository publishes its snapshots there, too.
 
-Two modules are different. `migration-tests` and `quarkus/migration-tests` run the Camunda 7
-adapter next to this one, and the snapshots of the Camunda 7 adapter are only in the GitHub Packages
-registry of the Camunda Community Hub,
-`https://maven.pkg.github.com/camunda-community-hub/vanillabp-camunda7-adapter`. GitHub Packages
-wants a login even for reading. So you need a personal access token (classic) with `read:packages`,
-and a server entry with the id `vanillabp-camunda7-adapter` in your
-`~/.m2/settings.xml`:
-
-```xml
-<server>
-  <id>vanillabp-camunda7-adapter</id>
-  <username>your GitHub login</username>
-  <password>the token</password>
-</server>
-```
-
-Without it, build the modules before it with
-`mvn install -pl integration-tests,quarkus/integration-tests,spring-boot-webapps -am`. The coverage
-reports need the two migration modules, so they are left out then. The workflows get the
-token from the secrets `VANILLABP_USER_NAME` and `VANILLABP_USER_TOKEN`. A pull request from a fork
-gets no secrets, so its build of those modules fails. A maintainer then pushes the branch to this
-repository. Once the Camunda 7 adapter has a release on Maven Central, the registry and this section
-go away (decision 8 in the repository's DECISIONS.md).
+The modules `migration-tests` and `quarkus/migration-tests` run the Camunda 7 adapter next to this
+one. Its snapshots, `io.vanillabp:camunda7-adapter-*`, are in the same snapshot repository, so
+these modules need no login either (decision 8 in the repository's DECISIONS.md).
 
 ## What a POM hands an application
 
@@ -204,7 +184,7 @@ By hand it goes like this:
    - a new engine setting, or a new engine component with tables of its own. CIB seven changed the
      default of `modelerEnabled` (decision 5 in the repository's DECISIONS.md), and it may add more.
 4. Read the new entries of the
-   [decision log of the Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter/blob/main/DECISIONS.md).
+   [decision log of the Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter/blob/main/DECISIONS.md).
    Each of them holds here (decision 1 in the repository's DECISIONS.md). Where CIB seven needs
    something else, add an entry here.
 5. Build with `mvn install` and compare the test counts with the build of the Camunda 7 adapter at
@@ -259,9 +239,8 @@ uploads the log as a test report. Read it and fix what it says. Do not push agai
 whether the error goes away.
 
 If this is your first pull request in the repository, a maintainer approves the first run of the
-workflows. A pull request from a fork builds and tests like any other, except for the two
-migration modules, see [Snapshots](#snapshots). It cannot publish anything, because GitHub gives it
-no secrets of this repository. [What the build of a pull request can
+workflows. A pull request from a fork builds and tests like any other. It cannot publish
+anything, because GitHub gives it no secrets of this repository. [What the build of a pull request can
 do](https://github.com/vanillabp/development-workspace#what-the-build-of-a-pull-request-can-do) says
 more.
 

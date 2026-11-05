@@ -3,7 +3,7 @@
 The VanillaBP adapter for the embedded CIB seven engine, on Spring Boot and on Quarkus.
 
 **First: change the Camunda 7 adapter, not this repository.** Nearly all code here is made from
-the [Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter). A
+the [Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter). A
 change to such code goes there and comes here with the next sync. Change this repository only where
 CIB seven behaves differently, and in the files which are this repository's own: the README, this
 file, the decision log, the workflows, the recipe and the scripts in `bin/`.
@@ -20,7 +20,7 @@ costs. Read it before you change anything at the SPI boundary.
 ## Most of the code is made, not written
 
 The code comes from the
-[Camunda 7 adapter](https://github.com/camunda-community-hub/vanillabp-camunda7-adapter). The
+[Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter). The
 script `bin/sync-from-camunda7.sh` copies it, renames it with the OpenRewrite recipe
 `rewrite/vanillabp-cibseven.yml` and commits the result to the branch `generated`. `main` merges
 `generated`. Everything this repository does differently sits on `main` as ordinary commits on top
