@@ -43,7 +43,9 @@ set -euo pipefail
 REWRITE_PLUGIN=org.openrewrite.maven:rewrite-maven-plugin:6.46.1
 
 # Files of the Camunda 7 adapter which this repository writes itself. They are not copied, so
-# 'generated' never holds them and a merge never touches them.
+# 'generated' never holds them and a merge never touches them. The inventory of the client
+# settings is one of them: it lists the settings of this engine, which has some Camunda 7 does
+# not have.
 KEPT_BY_MAIN=(
   .git
   .github
@@ -53,6 +55,7 @@ KEPT_BY_MAIN=(
   DECISIONS.md
   README.md
   UPGRADE.md
+  client-configuration-inventory.yml
   renovate.json
 )
 
