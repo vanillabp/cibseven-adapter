@@ -75,6 +75,8 @@ settings:
         key: vanillabp.adapters.<id>.database-schema-update
       - names: [historyTimeToLive]
         key: vanillabp.adapters.<id>.history-time-to-live
+      - names: [history, historyLevel]
+        key: vanillabp.adapters.<id>.history-level
       - names: [dataSource]
         key: vanillabp.adapters.<id>.data-source-name
       - names: [databaseTablePrefix]
@@ -91,6 +93,11 @@ settings:
         key: vanillabp.adapters.<id>.sleep-until-something-is-due
       - names: [modelerEnabled]
         key: vanillabp.adapters.<id>.modeler-enabled
+    # A ProcessEnginePlugin of the application which changes one of the settings below ends the
+    # start. The message names the setting, the adapter's value and the plugin. With
+    # 'vanillabp.adapters.<id>.allow-plugins-to-change-adapter-settings: true' the start goes on, with
+    # a WARN for each changed setting. A plugin may add entries to a list, but it may not remove the
+    # adapter's. The watch is CibSevenAdapterSettingsGuard, see decision 61 of the Camunda 7 adapter.
     set-by-adapter:
       - names:
           - applicationContext
@@ -99,8 +106,8 @@ settings:
           - transactionManager
           - transactionsExternallyManaged
         reason: >-
-          The adapter connects the engine to the application: to the Spring context or the class
-          loader of Quarkus, and to the transaction manager of the platform. It names the engine after
+          The adapter connects the engine to the application: to the Spring context and its class
+          loader or the class loader of Quarkus, and to the transaction manager of the platform. It names the engine after
           the adapter type and the adapter id, so that the engines of several adapter ids stay apart.
       - names:
           - customPostBPMNParseListeners
@@ -120,6 +127,20 @@ settings:
           The adapter brings its own job executor and starts it when workflow processing starts, not
           when the engine is built. The command interceptors wake that job executor after a commit,
           see 'sleep-until-something-is-due'.
+      - names: [idGenerator]
+        reason: >-
+          The adapter uses the StrongUuidGenerator, so ids are UUIDs as in version 1, where Camunda's
+          Spring Boot starter built the engine. The ids of a database which version 1 set up keep one
+          form, and several engines on one database do not compete for blocks of ids. An application which
+          wants another generator sets it with a ProcessEnginePlugin and
+          'vanillabp.adapters.<id>.allow-plugins-to-change-adapter-settings: true'.
+      - names: [jobExecutorDeploymentAware]
+        reason: >-
+          Always true, as recommended for version 1. The job executor fetches only the jobs of the
+          deployments registered with it, and the adapter registers every deployment of the
+          application's workflow modules, the older versions included. During a rolling update a node
+          with the old code then leaves the jobs of a newer version alone. There is no key to switch
+          it off, and a plugin which does ends the start.
     not-supported:
       - names:
           - artifactFactory
@@ -163,7 +184,6 @@ settings:
           - historyEventProducer
           - historyLevelCommand
           - historyService
-          - idGenerator
           - identityProviderSessionFactory
           - identityService
           - incidentHandlers
@@ -317,7 +337,6 @@ settings:
           - enforceHistoryTimeToLive
           - fridayHistoryCleanupBatchWindowEndTime
           - fridayHistoryCleanupBatchWindowStartTime
-          - history
           - historyCleanupBatchSize
           - historyCleanupBatchThreshold
           - historyCleanupBatchWindowEndTime
@@ -332,7 +351,6 @@ settings:
           - historyCleanupJobPriority
           - historyCleanupMetricsEnabled
           - historyCleanupStrategy
-          - historyLevel
           - historyRemovalTimeStrategy
           - mondayHistoryCleanupBatchWindowEndTime
           - mondayHistoryCleanupBatchWindowStartTime
@@ -352,9 +370,9 @@ settings:
           - wednesdayHistoryCleanupBatchWindowEndTime
           - wednesdayHistoryCleanupBatchWindowStartTime
         reason: >-
-          How much history the engine writes and when it removes it again. The adapter works with the
-          defaults of the engine. Only 'history-time-to-live' has a key, because the engine refuses a
-          model without one. An application which needs another value sets it with a
+          When the engine removes its history again. The adapter works with the defaults of the engine.
+          Only 'history-time-to-live' has a key, because the engine refuses a model without one. How
+          much history the engine writes has the key 'history-level'. An application which needs another value sets it with a
           ProcessEnginePlugin: as a bean on Spring Boot, or as a class under
           'vanillabp.adapters.<id>.engine-plugins' on both platforms.
       - names:
@@ -374,7 +392,6 @@ settings:
           - invocationsPerBatchJobByBatchType
           - jobExecutorAcquireByPriority
           - jobExecutorAcquireExclusiveOverProcessHierarchies
-          - jobExecutorDeploymentAware
           - jobExecutorPreferTimerJobs
           - jobExecutorPriorityRangeMax
           - jobExecutorPriorityRangeMin
@@ -504,6 +521,8 @@ settings:
         key: vanillabp.adapters.<id>.table-prefix
       - names: [camunda.bpm.default-serialization-format]
         key: vanillabp.adapters.<id>.serialization-format
+      - names: [camunda.bpm.history-level]
+        key: vanillabp.adapters.<id>.history-level
       - names: [camunda.bpm.metrics.db-reporter-activate]
         key: vanillabp.adapters.<id>.db-metrics-reporting
       - names: [camunda.bpm.admin-user.id]
@@ -568,6 +587,10 @@ settings:
         reason: >-
           The adapter names the engine after the adapter type and the adapter id, so that the engines
           of several adapter ids stay apart.
+      - names: [camunda.bpm.job-execution.deployment-aware]
+        reason: >-
+          The adapter always works deployment-aware, see 'jobExecutorDeploymentAware' on the engine
+          surface.
       - names:
           - camunda.bpm.job-execution.core-pool-size
           - camunda.bpm.job-execution.enabled
@@ -581,6 +604,10 @@ settings:
           - camunda.bpm.auto-deployment-enabled
           - camunda.bpm.deployment-resource-pattern
         reason: VanillaBP deploys the models of each workflow module itself.
+      - names: [camunda.bpm.id-generator]
+        reason: >-
+          The adapter uses the StrongUuidGenerator, which is the starter's default 'strong'. So ids
+          are UUIDs as in version 1.
     not-supported:
       - names:
           - camunda.bpm.generic-properties.ignore-unknown-fields
@@ -600,19 +627,16 @@ settings:
           applications. The adapter calls the engine without a logged-in user. An application which
           needs another value sets it with a ProcessEnginePlugin: as a bean on Spring Boot, or as a
           class under 'vanillabp.adapters.<id>.engine-plugins' on both platforms.
-      - names:
-          - camunda.bpm.history-level
-          - camunda.bpm.history-level-default
+      - names: [camunda.bpm.history-level-default]
         reason: >-
-          The adapter works with the history level the engine has by default. An application which
-          needs another value sets it with a ProcessEnginePlugin: as a bean on Spring Boot, or as a
-          class under 'vanillabp.adapters.<id>.engine-plugins' on both platforms.
+          The level the starter uses for 'auto' on a new database. With 'history-level: auto' the
+          adapter's engine uses the engine's default 'audit' there. An application which wants
+          another level on a new database sets that level instead of 'auto'.
       - names:
           - camunda.bpm.database.jdbc-batch-processing
           - camunda.bpm.database.schema-name
           - camunda.bpm.database.type
           - camunda.bpm.default-number-of-retries
-          - camunda.bpm.id-generator
           - camunda.bpm.job-executor-acquire-by-priority
           - camunda.bpm.metrics.enabled
         reason: >-
@@ -623,7 +647,6 @@ settings:
       - names:
           - camunda.bpm.job-execution.backoff-decrease-threshold
           - camunda.bpm.job-execution.backoff-time-in-millis
-          - camunda.bpm.job-execution.deployment-aware
           - camunda.bpm.job-execution.lock-time-in-millis
           - camunda.bpm.job-execution.max-backoff
           - camunda.bpm.job-execution.max-jobs-per-acquisition
