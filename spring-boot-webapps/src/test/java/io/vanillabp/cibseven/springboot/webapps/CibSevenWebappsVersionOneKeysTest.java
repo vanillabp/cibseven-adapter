@@ -1,5 +1,6 @@
 package io.vanillabp.cibseven.springboot.webapps;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.DisplayName;
@@ -8,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.web.client.RestClient;
@@ -39,24 +39,26 @@ public class CibSevenWebappsVersionOneKeysTest {
   @DisplayName("A key the web applications read does not end the start, and it takes effect")
   public void aKeyTheWebappsReadIsKept() {
 
-    final var entry = RestClient
+    final var rest = RestClient
         .builder()
         .baseUrl("http://localhost:%d".formatted(port))
-        .build()
-        .get()
-        .uri("/engine-ui")
-        .retrieve()
-        .toBodilessEntity();
+        .defaultStatusHandler(status -> true, (
+            request,
+            response) -> {
+          // the status is what the test looks at
+        })
+        .build();
 
-    assertTrue(entry.getStatusCode().is3xxRedirection(), () -> String.valueOf(entry.getStatusCode()));
+    // Camunda 7 moves its classic web applications to the application path. CIB seven keeps
+    // them at /camunda and moves its new webclient there instead, away from /webapp. Either way
+    // the key takes effect, and that is what this test is about
     assertTrue(
-        entry
-            .getHeaders()
-            .getFirst(HttpHeaders.LOCATION)
-            .contains("/engine-ui/app/"),
-        () -> entry
-            .getHeaders()
-            .getFirst(HttpHeaders.LOCATION));
+        rest.get().uri("/engine-ui").retrieve().toBodilessEntity().getStatusCode().is2xxSuccessful(),
+        "the webclient should answer at the configured application path");
+    assertEquals(
+        404,
+        rest.get().uri("/webapp").retrieve().toBodilessEntity().getStatusCode().value(),
+        "the webclient should have left its default path");
 
   }
 
