@@ -10,6 +10,7 @@ import org.cibseven.bpm.engine.RepositoryService;
 import org.cibseven.bpm.engine.repository.Deployment;
 import org.cibseven.bpm.engine.repository.ResourceDefinition;
 
+import io.vanillabp.cibseven.wiring.CibSevenDeploymentSource;
 import io.vanillabp.integration.adapter.spi.NameClashAvoidanceSupport;
 import io.vanillabp.integration.adapter.spi.NameClashAvoidanceSupport.IdentifierHeldElsewhere;
 import io.vanillabp.integration.adapter.spi.NameClashAvoidanceSupport.ScopedIdentifierKind;
@@ -349,9 +350,8 @@ public final class CibSevenIdentifiersTheEngineHolds {
         final Deployment deployment) {
 
       final var source = deployment.getSource();
-      final var deployedByAVanillaBpAdapter = (source != null) && source
-          .startsWith(CibSevenDeploymentService.ADAPTER_TYPE
-              + ":");
+      final var deployedByAVanillaBpAdapter = CibSevenDeploymentSource
+          .writtenByAVanillaBpAdapter(deployment.getName(), source);
       final var heldBy = "Camunda deployment '%s' (source '%s', deployed at %s)"
           .formatted(
               deployment.getName() != null

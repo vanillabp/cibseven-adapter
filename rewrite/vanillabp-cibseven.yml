@@ -65,6 +65,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7IdentifiersTheEngineHolds
       newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenIdentifiersTheEngineHolds
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7JobExecutorRegistration
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenJobExecutorRegistration
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7MultiInstanceItems
       newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenMultiInstanceItems
   - org.openrewrite.java.ChangeType:
@@ -79,6 +82,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7WorkflowProcessingLifecycle
       newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenWorkflowProcessingLifecycle
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7AdapterSettingsGuard
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenAdapterSettingsGuard
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7DmnFeelLegacyBehavior
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenDmnFeelLegacyBehavior
@@ -98,6 +104,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7EngineProperties
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenEngineProperties
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7HistoryLevel
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenHistoryLevel
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7InstanceIdentity
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenInstanceIdentity
   - org.openrewrite.java.ChangeType:
@@ -115,6 +124,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7SleepingJobExecutor
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenSleepingJobExecutor
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7StartupExplanation
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenStartupExplanation
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7TablePrefixSchema
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenTablePrefixSchema
@@ -166,6 +178,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.Camunda7DeliveringJob
       newFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.CibSevenDeliveringJob
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.Camunda7DeploymentSource
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.CibSevenDeploymentSource
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.Camunda7ListenerNotification
       newFullyQualifiedTypeName: io.vanillabp.camunda7.wiring.CibSevenListenerNotification
@@ -257,6 +272,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7DeclaredProcessWiringTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenDeclaredProcessWiringTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7DeploymentAwareJobAcquisitionTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenDeploymentAwareJobAcquisitionTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7DeploymentServiceTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenDeploymentServiceTest
   - org.openrewrite.java.ChangeType:
@@ -302,6 +320,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.Camunda7WorkflowModuleIsolationTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.deployment.CibSevenWorkflowModuleIsolationTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7AdapterSettingsGuardTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenAdapterSettingsGuardTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7DmnFeelLegacyBehaviorTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenDmnFeelLegacyBehaviorTest
   - org.openrewrite.java.ChangeType:
@@ -313,6 +334,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7FeelLessEngine
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenFeelLessEngine
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7HistoryLevelTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenHistoryLevelTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.engine.Camunda7InstanceIdentityTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.engine.CibSevenInstanceIdentityTest
@@ -410,6 +434,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7AggregateSyncOnAnOwnDataSourceIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenAggregateSyncOnAnOwnDataSourceIT
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7ApplicationClassLoaderIT
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenApplicationClassLoaderIT
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7BpmsInitiatedStartIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenBpmsInitiatedStartIT
   - org.openrewrite.java.ChangeType:
@@ -476,6 +503,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7ParamTypesJsonIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenParamTypesJsonIT
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7PluginChangingAnAdapterSettingIT
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenPluginChangingAnAdapterSettingIT
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7ProcessVersionIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenProcessVersionIT
   - org.openrewrite.java.ChangeType:
@@ -515,8 +545,14 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7UnsharedExpressionCheckIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenUnsharedExpressionCheckIT
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7UpgradeFromVersionOneIT
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenUpgradeFromVersionOneIT
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7UserTaskDeliveryRecordIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenUserTaskDeliveryRecordIT
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7VersionOneDatabaseIT
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenVersionOneDatabaseIT
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.it.Camunda7ViewerApiIT
       newFullyQualifiedTypeName: io.vanillabp.camunda7.it.CibSevenViewerApiIT
@@ -578,6 +614,12 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7OnlyANamedDataSourceTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenOnlyANamedDataSourceTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7PluginAllowedToChangeAnAdapterSettingTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenPluginAllowedToChangeAnAdapterSettingTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7PluginChangingAnAdapterSettingTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenPluginChangingAnAdapterSettingTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7PrefixWithoutItsTablesTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenPrefixWithoutItsTablesTest
   - org.openrewrite.java.ChangeType:
@@ -632,11 +674,17 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7DmnFeelLegacyBehaviorTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenDmnFeelLegacyBehaviorTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7HistoryLevelTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenHistoryLevelTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7OldProcessVersionsTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenOldProcessVersionsTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7SleepingEngineTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenSleepingEngineTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7StartupExplanationTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenStartupExplanationTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7WorkflowLifecycleTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenWorkflowLifecycleTest
@@ -686,6 +734,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.webapps.Camunda7WebappsTwoAdapterIdsTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.webapps.CibSevenWebappsTwoAdapterIdsTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.webapps.Camunda7WebappsVersionOneKeysTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.webapps.CibSevenWebappsVersionOneKeysTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.webapps.Camunda7WebappsWithoutAdminUserTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.webapps.CibSevenWebappsWithoutAdminUserTest
   - org.openrewrite.java.ChangeType:
@@ -695,8 +746,20 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7AdapterConfiguration
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenAdapterConfiguration
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7EmptySections
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenEmptySections
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7VersionOneKeys
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenVersionOneKeys
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.VanillaBpCamunda7Properties
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.VanillaBpCibSevenProperties
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.diagnostics.Camunda7StartupExplanationFailureAnalyzer
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.diagnostics.CibSevenStartupExplanationFailureAnalyzer
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.engine.Camunda7EngineDatabase
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.engine.CibSevenEngineDatabase
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.engine.Camunda7EngineHolder
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.engine.CibSevenEngineHolder
@@ -710,11 +773,23 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.processservice.Camunda7ProcessServiceConfiguration
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.processservice.CibSevenProcessServiceConfiguration
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7ExternalTaskClientVersionOneKeysTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenExternalTaskClientVersionOneKeysTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7VersionOneKeysTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenVersionOneKeysTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.diagnostics.Camunda7StartupExplanationFailureAnalyzerTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.diagnostics.CibSevenStartupExplanationFailureAnalyzerTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.Camunda7AdapterBootTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.CibSevenAdapterBootTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.Camunda7EngineHolderTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.CibSevenEngineHolderTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.Camunda7VersionOneDataSourceTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.CibSevenVersionOneDataSourceTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.fork.CibsevenAdapterDouble
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.fork.OperatonAdapterDouble

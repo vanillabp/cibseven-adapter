@@ -51,8 +51,9 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
    * foreign deployment from this application's own history. The source says how sure the
    * adapter can be about a deployment which carries another name.
    */
-  private static final String OUR_SOURCE = "cibseven:"
-      + ADAPTER_ID;
+  private static final String OUR_SOURCE = ADAPTER_ID
+      + ":"
+      + MODULE;
 
   private ProcessEngine engine;
 
@@ -265,7 +266,7 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
   @DisplayName("Another adapter id of a VanillaBP application is reported, but not as certainly foreign")
   public void anotherAdapterIdIsReportedWithoutCertainty() {
 
-    deployedBySomebodyElse("another-module", "cibseven:the-other-engine", null, java.util.Map
+    deployedBySomebodyElse("another-module", "the-other-engine:another-module", null, java.util.Map
         .of("loan-approval.bpmn", bpmnOf(PROCESS_ID)));
     final var scoping = unscoped();
 

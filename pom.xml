@@ -90,6 +90,8 @@
     <spring-boot.version>4.1.2</spring-boot.version>
     <quarkus.version>3.40.1.1</quarkus.version>
     <lombok.version>1.18.48</lombok.version>
+    <!-- the engine's StrongUuidGenerator needs it, and cibseven-engine declares it 'provided' -->
+    <java-uuid-generator.version>4.3.0</java-uuid-generator.version>
   </properties>
 
   <dependencyManagement>
@@ -153,6 +155,11 @@
         <artifactId>cibseven-engine-spring-7</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.fasterxml.uuid</groupId>
+        <artifactId>java-uuid-generator</artifactId>
+        <version>${java-uuid-generator.version}</version>
+      </dependency>
       <!-- Managed here and declared without a version in the three modules which use
            them, so that no POM we publish names '${cibseven.version}' where a consumer
            reads a version. Our own build resolved that name because this file is in the
@@ -167,6 +174,11 @@
       <dependency>
         <groupId>org.cibseven.bpm.springboot</groupId>
         <artifactId>cibseven-bpm-spring-boot-starter-webapp-4</artifactId>
+        <version>${cibseven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cibseven.bpm.springboot</groupId>
+        <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>
