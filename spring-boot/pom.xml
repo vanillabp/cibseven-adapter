@@ -107,7 +107,7 @@
       <!-- reads camunda.bpm.client.*, which the adapter then leaves alone. See
            CibSevenExternalTaskClientVersionOneKeysTest -->
       <groupId>org.cibseven.bpm.springboot</groupId>
-      <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
+      <artifactId>cibseven-bpm-spring-boot-starter-external-task-client-4</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

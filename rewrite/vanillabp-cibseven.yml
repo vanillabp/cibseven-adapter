@@ -872,6 +872,12 @@ recipeList:
       replace: cibseven-bpm-spring-boot-starter-webapp-4
       caseSensitive: true
       regex: true
+  # The starter of the external task client. It binds 'camunda.bpm.client.*', like Camunda's.
+  - org.openrewrite.text.FindAndReplace:
+      find: '\bcamunda-bpm-spring-boot-starter-external-task-client\b'
+      replace: cibseven-bpm-spring-boot-starter-external-task-client-4
+      caseSensitive: true
+      regex: true
   - org.openrewrite.text.FindAndReplace:
       find: camunda-engine-plugin-spin
       replace: cibseven-engine-plugin-spin

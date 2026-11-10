@@ -22,7 +22,7 @@ import java.util.Map;
  * Camunda's web applications and reads <code>camunda.bpm.enabled</code> itself. The starter it
  * brings writes <code>camunda.bpm.version</code>, <code>camunda.bpm.is-enterprise</code> and
  * <code>camunda.bpm.formatted-version</code> into the environment on its own. Camunda's
- * starter of the external task client, <code>camunda-bpm-spring-boot-starter-external-task-client</code>,
+ * starter of the external task client, <code>cibseven-bpm-spring-boot-starter-external-task-client-4</code>,
  * reads <code>camunda.bpm.client.*</code>. An application may use it next to the adapter, to
  * work on the external tasks of another engine.
  * <p>
@@ -152,7 +152,7 @@ final class CibSevenVersionOneKeys {
               "webapp", "Add the module cibseven-adapter-spring-boot-webapps, which serves the web "
                   + "applications and reads these keys, or remove the key."),
           new Rule(
-              "client", "Add Camunda's starter camunda-bpm-spring-boot-starter-external-task-client, which reads "
+              "client", "Add Camunda's starter cibseven-bpm-spring-boot-starter-external-task-client-4, which reads "
                   + "these keys, or remove the key."),
           new Rule(
               "enabled", "VanillaBP builds an engine for every adapter id of type cibseven. "
