@@ -50,7 +50,9 @@
     <module>quarkus/runtime</module>
     <module>quarkus/deployment</module>
     <module>quarkus/integration-tests</module>
+    <module>quarkus/migration-tests</module>
     <module>integration-tests</module>
+    <module>migration-tests</module>
     <module>test-coverage-report</module>
   </modules>
 
@@ -86,6 +88,12 @@
     <coverage.rule>90</coverage.rule>
     <spi-for-java.version>2.0.0-SNAPSHOT</spi-for-java.version>
     <adapter-platform.version>2.0.0-SNAPSHOT</adapter-platform.version>
+    <!-- The CIB seven minor this adapter is built and tested with, in its public release
+         x.y.0. The minor is part of the adapter version, too (see decision 3 in the
+         repository's DECISIONS.md). An application with a patch release of CIB seven may set
+         that patch, because a patch keeps the API and the schema. It must not set another
+         minor: the adapter uses engine classes under '.impl.', which CIB seven may change in
+         any minor. -->
     <cibseven.version>2.2.0</cibseven.version>
     <spring-boot.version>4.1.2</spring-boot.version>
     <quarkus.version>3.40.1.1</quarkus.version>

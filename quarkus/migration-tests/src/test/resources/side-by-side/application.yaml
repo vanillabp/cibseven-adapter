@@ -1,0 +1,40 @@
+quarkus:
+  datasource:
+    db-kind: h2
+    jdbc:
+      url: jdbc:h2:mem:quarkus-side-by-side-c7;DB_CLOSE_DELAY=-1
+      transactions: xa
+    cs:
+      db-kind: h2
+      jdbc:
+        url: jdbc:h2:mem:quarkus-side-by-side-cs;DB_CLOSE_DELAY=-1
+        transactions: xa
+  hibernate-orm:
+    schema-management:
+      strategy: drop-and-create
+vanillabp:
+  outbox:
+    poll-interval: PT0.5S
+    attempt-frequency: PT1S
+  adapters:
+    c7:
+      type: camunda7
+      data-source-name: default
+    cs:
+      type: cibseven
+      data-source-name: cs
+  prioritized-adapters:
+    - cs
+    - c7
+  workflow-modules:
+    migration:
+      adapters:
+        c7:
+          resources-location: classpath:migration/processes
+        cs:
+          resources-location: classpath:migration/processes
+      workflows:
+        MigrationProcess:
+          allow-full-sync-with-bpms: true
+          declared-aggregate-values:
+            - '*'

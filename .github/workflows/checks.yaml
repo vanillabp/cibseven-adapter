@@ -1,0 +1,107 @@
+name: Checks
+# The checks a pull request can answer without building anything. The Maven build of this
+# repository is the job 'publish' of publish-snapshots.yaml, and it runs on a pull
+# request too. This workflow runs beside that build and is done long before it.
+"on":
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  # One run of the checks per branch, and the newest run wins. Nobody reads the answer of
+  # a commit which has been pushed over. Cancelling is right here and wrong for the
+  # publish group of publish-snapshots.yaml: a publish carries work which cannot
+  # be repeated, a check can run again any time.
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  # Javadoc keeps the last block in front of an element and drops every earlier one, and it
+  # says nothing while it does. The script finds such a pair. It needs a checkout and
+  # nothing else, so it answers in seconds, while the Maven build is still running. That is
+  # why the check stands here and not in that build: whoever left a dropped block behind
+  # reads about it right away and not when the build is through.
+  orphaned-javadoc-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: No javadoc block stands in front of another one
+        run: bin/check-orphaned-javadoc.sh
+
+  # A citation of a decision is a promise that the decision is there to read. It breaks
+  # without a word: a pending decision gets its number and its file goes away, or a citation
+  # names a number nobody handed out. It also breaks the other way round, when a pending
+  # decision is cited by its number instead of by its file, because the search which runs at
+  # the numbering then walks past it. Two such citations lived in the tree of
+  # adapter-platform-integration for weeks, and the script comes from there.
+  #
+  # Like the check above this needs a checkout and nothing else, so it answers in seconds.
+  # The self test runs first: the script joins wrapped lines, and that is the part of it
+  # which a line-by-line search cannot do, so it is the part worth holding.
+  decision-citation-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: The citation check still finds a wrapped citation
+        run: bin/check-decision-citations.sh --self-test
+      - name: Every citation of a decision points at something which exists
+        run: bin/check-decision-citations.sh
+
+  # A new engine version can bring a setting which the adapter does not pass on yet. The build
+  # stays green and nobody notices, because the adapter builds the engine itself and reads only
+  # its own keys. So this job reads the engine jars of the base branch and of the pull request,
+  # and opens an issue for each new setting which client-configuration-inventory.yml does not
+  # list yet. The script says in its header what else it reports.
+  #
+  # A find never makes this job red. The pull request may merge as soon as the build is green,
+  # and the issue carries the work. Only a failure of the script itself makes it red, because a
+  # check which read nothing must not look like a version without news. That is also why the
+  # self test runs first.
+  client-configuration:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # the issue for a new setting, and its label
+      issues: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # A pull request is checked out as a merge commit. Its first parent is the base
+          # branch, and the POM there names the version the pull request moves away from.
+          fetch-depth: 2
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.15"
+      - name: PyYAML, which reads the inventory
+        run: pip install --quiet pyyaml==6.0.3
+      - name: The check still finds a setting it is known to find
+        run: python .github/client-configuration/check.py self-test
+      - name: Each new setting of the engine becomes an issue
+        env:
+          GH_TOKEN: "${{ github.token }}"
+          # Optional. With a token which may write to the organization's projects, the script
+          # adds a new issue to the project itself. Without it, the auto-add workflow of the
+          # project has to pick the issue up by its label.
+          PROJECT_TOKEN: "${{ secrets.VANILLABP_PROJECT_TOKEN }}"
+          EVENT: "${{ github.event_name }}"
+          PULL_REQUEST: "${{ github.event.pull_request.html_url }}"
+          # The token of a pull request from a fork may not write issues, so such a run only
+          # says in its summary which issue it would open. Renovate and the maintainers push
+          # their branches to this repository, so their pull requests open the issues.
+          SAME_REPOSITORY: "${{ github.event.pull_request.head.repo.full_name == github.repository }}"
+        run: |
+          set -euo pipefail
+          base="$RUNNER_TEMP/base-pom.xml"
+          if [ "$EVENT" = "pull_request" ]; then
+            git show HEAD^1:pom.xml > "$base"
+          else
+            # a run by hand has no base to compare with, it checks the inventory only
+            cp pom.xml "$base"
+          fi
+          create=()
+          if [ "$SAME_REPOSITORY" = "true" ]; then
+            create=(--create-issues)
+          fi
+          python .github/client-configuration/check.py check \
+            --base-pom "$base" --head-pom pom.xml \
+            ${PULL_REQUEST:+--pull-request "$PULL_REQUEST"} \
+            --summary "$GITHUB_STEP_SUMMARY" "${create[@]}"

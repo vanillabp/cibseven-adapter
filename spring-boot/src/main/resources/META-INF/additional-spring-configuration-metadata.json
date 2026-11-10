@@ -31,7 +31,7 @@
     {
       "name": "vanillabp.adapters.cibseven.serialization-format",
       "type": "java.lang.String",
-      "description": "The serialization format of a shared value the engine has no variable type for, for example 'application/json' or 'application/xstream'. The matching dataformat has to be on the class path. It is also read per workflow module and per workflow, and the most specific value wins: 'vanillabp.workflow-modules.<module>.workflows.<workflow>.adapters.<id>.serialization-format'."
+      "description": "The serialization format of a shared value the engine has no variable type for, for example 'application/json'. The matching dataformat has to be on the class path. It is also read per workflow module and per workflow, and the most specific value wins: 'vanillabp.workflow-modules.<module>.workflows.<workflow>.adapters.<id>.serialization-format'."
     },
     {
       "name": "vanillabp.adapters.cibseven.engine-plugins",
@@ -76,6 +76,12 @@
       "name": "vanillabp.adapters.cibseven.allow-plugins-to-change-adapter-settings",
       "type": "java.lang.Boolean",
       "description": "Whether an engine plugin of the application may change a setting which the adapter sets itself, like the id generator or 'jobExecutorDeploymentAware'. Without it such a change ends the start, and the message names the setting and the plugin. With it each change gets a warning, and the start goes on. Only the adapter level exists, because the settings belong to the engine.",
+      "defaultValue": false
+    },
+    {
+      "name": "vanillabp.adapters.cibseven.modeler-enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether the engine creates and checks the tables of CIB seven's modeler (MOD_* and CHAT_MESSAGES). VanillaBP does not use the modeler, so the default is false, unlike the engine's own default. With a table prefix and 'true', the prefixed modeler tables have to exist. Only the adapter level exists, because the setting belongs to the engine.",
       "defaultValue": false
     }
   ]

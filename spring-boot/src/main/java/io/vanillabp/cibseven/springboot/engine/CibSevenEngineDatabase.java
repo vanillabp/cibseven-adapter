@@ -157,7 +157,7 @@ public record CibSevenEngineDatabase(
             Or name one of them 'camundaBpmDataSource', as in VanillaBP 1, and the engine runs on \
             that one without the key. \
             (Two adapter ids may also share one datasource if each uses its own \
-            'vanillabp.adapters.<id>.table-prefix' - Camunda does not create prefixed tables, so \
+            'vanillabp.adapters.<id>.table-prefix' - CIB seven does not create prefixed tables, so \
             those have to exist beforehand.)"""
             .formatted(adapterId, String.join("', '", candidates), adapterId));
 

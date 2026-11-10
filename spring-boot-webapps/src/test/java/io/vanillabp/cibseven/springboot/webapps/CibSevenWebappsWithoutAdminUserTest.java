@@ -55,23 +55,36 @@ public class CibSevenWebappsWithoutAdminUserTest {
   @DisplayName("The web applications are served nevertheless")
   public void webappsAreServedNevertheless() {
 
-    final var entry = RestClient
+    final var rest = RestClient
         .builder()
         .baseUrl("http://localhost:"
             + port)
-        .build()
+        .build();
+    final var entry = rest
         .get()
         .uri("/camunda")
         .retrieve()
         .toBodilessEntity();
 
-    assertTrue(entry.getStatusCode().is3xxRedirection(), () -> ""
-        + entry.getStatusCode());
-    assertTrue(
-        entry
-            .getHeaders()
-            .getFirst(HttpHeaders.LOCATION)
-            .contains("/camunda/app/"));
+    // Camunda 7 redirects /camunda into /camunda/app/, CIB seven answers it with a page of
+    // its own. So the web applications themselves are asked for, too
+    assertTrue(entry.getStatusCode().is3xxRedirection() || entry.getStatusCode().is2xxSuccessful(),
+        () -> ""
+            + entry.getStatusCode());
+    if (entry.getStatusCode().is3xxRedirection()) {
+      assertTrue(
+          entry
+              .getHeaders()
+              .getFirst(HttpHeaders.LOCATION)
+              .contains("/camunda/app/"));
+    }
+    assertTrue(rest
+        .get()
+        .uri("/camunda/app/cockpit/")
+        .retrieve()
+        .toBodilessEntity()
+        .getStatusCode()
+        .is2xxSuccessful());
 
   }
 

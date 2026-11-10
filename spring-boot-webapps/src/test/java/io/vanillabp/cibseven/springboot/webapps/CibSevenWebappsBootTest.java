@@ -93,13 +93,18 @@ public class CibSevenWebappsBootTest {
         .retrieve()
         .toBodilessEntity();
 
-    assertTrue(entry.getStatusCode().is3xxRedirection(), () -> ""
-        + entry.getStatusCode());
-    final var location = entry
-        .getHeaders()
-        .getFirst(HttpHeaders.LOCATION);
-    assertNotNull(location, "the web application should redirect somewhere");
-    assertTrue(location.contains("/camunda/app/"), location);
+    // Camunda 7 redirects /camunda into /camunda/app/. CIB seven answers it with a page of
+    // its own. Either way the web applications are reached under /camunda/app/ below
+    assertTrue(entry.getStatusCode().is3xxRedirection() || entry.getStatusCode().is2xxSuccessful(),
+        () -> ""
+            + entry.getStatusCode());
+    if (entry.getStatusCode().is3xxRedirection()) {
+      final var location = entry
+          .getHeaders()
+          .getFirst(HttpHeaders.LOCATION);
+      assertNotNull(location, "the web application should redirect somewhere");
+      assertTrue(location.contains("/camunda/app/"), location);
+    }
 
     final var app = rest
         .get()
@@ -113,8 +118,8 @@ public class CibSevenWebappsBootTest {
     assertTrue(
         app
             .getBody()
-            .contains("Camunda"),
-        () -> "the page should be a Camunda web application: "
+            .contains("CIB seven"),
+        () -> "the page should be a CIB seven web application: "
             + app.getBody());
 
   }

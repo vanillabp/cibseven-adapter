@@ -284,6 +284,30 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
   }
 
   @Test
+  @DisplayName("A deployment of the Camunda 7 or Operaton adapter on the same database is not certainly foreign either")
+  public void aDeploymentOfTheCamunda7AdapterIsNotCertainlyForeign() {
+
+    // what an application leaves behind which ran on the Camunda 7 adapter or the Operaton
+    // adapter with this id, and then switched its database over to CIB seven (see decision 7
+    // in the repository's DECISIONS.md). Both write the source in the same form as this
+    // adapter, the adapter id and the workflow module
+    deployedBySomebodyElse("another-module", ADAPTER_ID
+        + ":another-module", null, java.util.Map.of("loan-approval.bpmn", bpmnOf(PROCESS_ID)));
+    final var scoping = unscoped();
+
+    deployOurModule(scoping, false);
+
+    assertEquals(
+        java.util.List.of(PROCESS_ID),
+        scoping.heldElsewhereOfKind(ScopedIdentifierKind.BPMN_PROCESS_ID),
+        "another workflow module still holds the id, so it is worth a line");
+    assertFalse(
+        scoping.getHeldElsewhere().getFirst().certainlyForeign(),
+        "the other adapter wrote it, so it may be this very application before its switch");
+
+  }
+
+  @Test
   @DisplayName("A suspended definition still owns the id")
   public void aSuspendedDefinitionStillOwnsTheId() {
 

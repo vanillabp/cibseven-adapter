@@ -352,7 +352,7 @@ public final class CibSevenIdentifiersTheEngineHolds {
       final var source = deployment.getSource();
       final var deployedByAVanillaBpAdapter = CibSevenDeploymentSource
           .writtenByAVanillaBpAdapter(deployment.getName(), source);
-      final var heldBy = "Camunda deployment '%s' (source '%s', deployed at %s)"
+      final var heldBy = "CIB seven deployment '%s' (source '%s', deployed at %s)"
           .formatted(
               deployment.getName() != null
                   ? deployment.getName()
@@ -364,12 +364,14 @@ public final class CibSevenIdentifiersTheEngineHolds {
       return new Holder(
           deployedByAVanillaBpAdapter
               ? heldBy
-                  + ", which a VanillaBP CIB seven adapter deployed under another name"
+                  + ", which a VanillaBP adapter for CIB seven, Camunda 7 or Operaton deployed under another name"
               : heldBy
                   + ", which nothing of this workflow module deployed",
-          // a source which names a CIB seven adapter of VanillaBP may be this very
-          // application. Another adapter id is what a migration between two engines looks
-          // like. And another workflow module of the application writes its own name, too
+          // a source which names a VanillaBP adapter may be this very application. The
+          // adapters for Camunda 7 and Operaton write the same form on the same tables (see
+          // decision 7 in the repository's DECISIONS.md). Another adapter id is what a
+          // migration between two engines looks like. And another workflow module of the
+          // application writes its own name, too
           !deployedByAVanillaBpAdapter);
 
     }

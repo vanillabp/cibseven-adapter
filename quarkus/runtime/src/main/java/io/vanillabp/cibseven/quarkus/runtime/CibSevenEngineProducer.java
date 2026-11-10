@@ -188,6 +188,7 @@ public class CibSevenEngineProducer {
     keys.dbMetricsReporting().ifPresent(properties::setDbMetricsReporting);
     keys.dmnFeelLegacyBehavior().ifPresent(properties::setDmnFeelLegacyBehavior);
     keys.allowPluginsToChangeAdapterSettings().ifPresent(properties::setAllowPluginsToChangeAdapterSettings);
+    keys.modelerEnabled().ifPresent(properties::setModelerEnabled);
     // the named plugin sections are copied onto the platform-neutral model. So the core
     // builds and configures them the same way on both platforms
     properties
@@ -246,7 +247,7 @@ public class CibSevenEngineProducer {
                   vanillabp.adapters.%s.data-source-name: <datasource name>
                 Use the reserved value 'default' for the application's default datasource. \
                 (Two adapter ids may also share one datasource if each uses its own \
-                'vanillabp.adapters.<id>.table-prefix' - Camunda does not create prefixed tables, \
+                'vanillabp.adapters.<id>.table-prefix' - CIB seven does not create prefixed tables, \
                 so those have to exist beforehand.)"""
                 .formatted(adapterId, declaredDataSources, adapterId));
       }

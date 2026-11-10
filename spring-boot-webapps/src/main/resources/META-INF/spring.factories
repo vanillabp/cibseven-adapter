@@ -1,2 +1,3 @@
 org.springframework.boot.EnvironmentPostProcessor=\
-  io.vanillabp.cibseven.springboot.webapps.CibSevenWebappsEnvironmentPostProcessor
+  io.vanillabp.cibseven.springboot.webapps.CibSevenWebappsEnvironmentPostProcessor,\
+  io.vanillabp.cibseven.springboot.webapps.CibSevenWebclientSecret

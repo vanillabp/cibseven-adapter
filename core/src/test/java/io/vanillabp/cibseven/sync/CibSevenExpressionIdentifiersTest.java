@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import io.vanillabp.cibseven.sync.CibSevenExpressionIdentifiers.Placement;
 import io.vanillabp.integration.adapter.spi.expressions.ModelExpression;
 import io.vanillabp.integration.test.utils.SuppressOutputExtension;
 
