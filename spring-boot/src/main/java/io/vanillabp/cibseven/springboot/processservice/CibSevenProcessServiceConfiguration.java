@@ -1,13 +1,10 @@
 package io.vanillabp.cibseven.springboot.processservice;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.context.properties.ConfigurationPropertiesBindHandlerAdvisor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 import io.vanillabp.cibseven.springboot.CibSevenAdapterBeanRegistrar;
-import io.vanillabp.cibseven.springboot.CibSevenEmptySections;
 import io.vanillabp.cibseven.springboot.VanillaBpCibSevenProperties;
 
 /**
@@ -32,20 +29,6 @@ public class CibSevenProcessServiceConfiguration {
    * adapter are registered per configured adapter id, and only the registrar can do that.
    */
   public CibSevenProcessServiceConfiguration() {
-
-  }
-
-  /**
-   * Keeps the keys which other property sources set below a section of this adapter
-   * written as <code>{}</code> in a YAML file. Without it, the empty section hides them.
-   *
-   * @return The advisor Spring Boot applies when it binds {@link VanillaBpCibSevenProperties}
-   * @see CibSevenEmptySections
-   */
-  @Bean
-  public static ConfigurationPropertiesBindHandlerAdvisor cibsevenEmptySectionsKeepTheirKeys() {
-
-    return CibSevenEmptySections.advisor();
 
   }
 

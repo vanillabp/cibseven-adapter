@@ -1,0 +1,7 @@
+vanillabp:
+  adapters:
+    cibseven: {}
+  workflow-modules:
+    loans:
+      adapters:
+        cibseven: {}

@@ -47,6 +47,14 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <!-- the web applications of the Camunda 7 adapter, as an application has them during
+           the move to CIB seven. See CibSevenNextToTheCamunda7WebappsIT. -->
+      <groupId>io.vanillabp</groupId>
+      <artifactId>camunda7-adapter-spring-boot-webapps</artifactId>
+      <version>${camunda7-adapter.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
