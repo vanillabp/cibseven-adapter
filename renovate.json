@@ -35,6 +35,13 @@
       "addLabels": [
         "needs-doc-update"
       ]
+    },
+    {
+      "description": "java-uuid-generator follows the engine, not Renovate. cibseven-engine 2.2 is built against 4.3.0 and declares it 'provided', so the adapter brings exactly that version. Check it again with every new CIB seven minor.",
+      "matchPackageNames": [
+        "com.fasterxml.uuid:java-uuid-generator"
+      ],
+      "enabled": false
     }
   ]
 }
