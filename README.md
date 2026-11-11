@@ -161,6 +161,12 @@ keys which `cibseven-adapter-spring-boot-webapps` hands to CIB seven's web appli
 `camunda.bpm.webapp.*` and `camunda.bpm.enabled`, are left alone. The webclient's own keys start
 with `cibseven.` and are not affected.
 
+During a move from Camunda 7, an application has `camunda7-adapter-spring-boot-webapps` next to
+this adapter, and that module sets `camunda.bpm.enabled` to `false` as its default. That does not
+end the start, because the check skips the property sources which a webapps module of VanillaBP
+adds. The same key written by the application still ends it. `CibSevenNextToTheCamunda7WebappsIT`
+tests both.
+
 One key is new:
 
 |        Key        | Default |                                                                  What it does                                                                  |
