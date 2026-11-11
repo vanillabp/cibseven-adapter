@@ -1,0 +1,10 @@
+vanillabp:
+  prioritized-adapters:
+    - cibseven
+  adapters:
+    cibseven: {}
+  workflow-modules:
+    c7-smoke-test:
+      adapters:
+        cibseven:
+          resources-location: classpath*:c7-smoke-test/processes

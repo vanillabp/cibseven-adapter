@@ -31,6 +31,7 @@ import io.vanillabp.cibseven.sync.CibSevenSerializationRoundTrip;
 import io.vanillabp.cibseven.wiring.CibSevenAllowListenersResolver;
 import io.vanillabp.cibseven.wiring.CibSevenCallActivities;
 import io.vanillabp.cibseven.wiring.CibSevenConfiguredTenant;
+import io.vanillabp.cibseven.wiring.CibSevenDeploymentSource;
 import io.vanillabp.cibseven.wiring.CibSevenListeners;
 import io.vanillabp.cibseven.wiring.CibSevenProcessVersions;
 import io.vanillabp.cibseven.wiring.CibSevenScoping;
@@ -237,6 +238,27 @@ public class CibSevenDeploymentService implements AdapterDeploymentService<BpmnM
       final org.cibseven.bpm.engine.IdentityService identityService) {
 
     this.identityService = identityService;
+
+  }
+
+  /**
+   * The engine's management service. Every deployment of a workflow module is registered
+   * there with the job executor, the older versions included (see
+   * {@link CibSevenJobExecutorRegistration}). May be <code>null</code> in tests. Then only the
+   * deploy command registers the deployment it makes.
+   */
+  private org.cibseven.bpm.engine.ManagementService managementService;
+
+  /**
+   * Sets the engine's management service (the platform modules take it from this adapter
+   * id's engine).
+   *
+   * @param managementService The management service or <code>null</code>
+   */
+  public void setManagementService(
+      final org.cibseven.bpm.engine.ManagementService managementService) {
+
+    this.managementService = managementService;
 
   }
 
@@ -2759,9 +2781,8 @@ public class CibSevenDeploymentService implements AdapterDeploymentService<BpmnM
     var deploymentBuilder = repositoryService
         .createDeployment()
         .name(workflowModuleId)
-        .source(ADAPTER_TYPE
-            + ":"
-            + adapterId)
+        // see decision 17 in the Camunda 7 adapter's DECISIONS.md
+        .source(CibSevenDeploymentSource.of(adapterId, workflowModuleId))
         .enableDuplicateFiltering(true);
     if (tenantId != null) {
       deploymentBuilder = deploymentBuilder.tenantId(tenantId);
@@ -2784,6 +2805,13 @@ public class CibSevenDeploymentService implements AdapterDeploymentService<BpmnM
     // it assigned to every model deployed now. They feed the version catalog. So the
     // version deployed by THIS boot needs no query at all
     final var deployment = deploymentBuilder.deployWithResult();
+    // the engine works deployment-aware. The deploy command registered only the deployment
+    // it made or found. Workflows on older versions need theirs registered as well. See
+    // decision 59 in the Camunda 7 adapter's DECISIONS.md
+    if (managementService != null) {
+      CibSevenJobExecutorRegistration
+          .registerEveryDeploymentOf(adapterId, workflowModuleId, tenantId, repositoryService, managementService);
+    }
     final var deployedDefinitions = deployment.getDeployedProcessDefinitions();
     if (deployedDefinitions != null) {
       deployedDefinitions
