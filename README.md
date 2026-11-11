@@ -149,10 +149,17 @@ The keys are the ones of the Camunda 7 adapter, at `vanillabp.adapters.<id>.*`, 
 after the setters of the engine configuration, which CIB seven kept:
 `database-schema-update`, `history-time-to-live`, `data-source-name`, `table-prefix`,
 `serialization-format`, `engine-plugins`, `tenant-id`, `accept-unscoped-identifiers`,
-`allow-listeners`, `sleep-until-something-is-due`, `db-metrics-reporting` and
-`dmn-feel-legacy-behavior`. The [README of the Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter#configuration)
+`allow-listeners`, `sleep-until-something-is-due`, `db-metrics-reporting`,
+`dmn-feel-legacy-behavior`, `history-level` and `allow-plugins-to-change-adapter-settings`. The
+[README of the Camunda 7 adapter](https://github.com/vanillabp/camunda7-adapter#configuration)
 describes each of them. The adapter reads none of CIB seven's own keys (`camunda.bpm.*`,
 `quarkus.cibseven.*`), because it does not use CIB seven's starter or extension.
+
+CIB seven's starter kept the prefix of Camunda's starter, `camunda.bpm.*`. So on Spring Boot such
+a key ends the start, as in the Camunda 7 adapter, and the message says what to write instead. The
+keys which `cibseven-adapter-spring-boot-webapps` hands to CIB seven's web applications,
+`camunda.bpm.webapp.*` and `camunda.bpm.enabled`, are left alone. The webclient's own keys start
+with `cibseven.` and are not affected.
 
 One key is new:
 
@@ -197,7 +204,7 @@ The optional module `cibseven-adapter-spring-boot-webapps` serves Cockpit, Taskl
 adapter: CIB seven's starter still reads `camunda.bpm.*`, so the module switches
 `camunda.bpm.enabled` off, and it registers VanillaBP's engines with the runtime container.
 
-Two things differ:
+Three things differ:
 
 1. **The webclient needs a secret.** CIB seven's starter for Spring Boot 4,
    `cibseven-bpm-spring-boot-starter-webapp-4`, also brings CIB seven's new webclient, at `/webapp`.
@@ -219,6 +226,9 @@ Two things differ:
 2. **`/camunda` does not redirect.** CIB seven answers `GET /camunda` with a page of its own. The
    classic web applications are at `/camunda/app/cockpit/`, `/camunda/app/tasklist/` and
    `/camunda/app/admin/`, as before.
+3. **`camunda.bpm.webapp.application-path` moves the webclient.** With Camunda 7 the key moves
+   the classic web applications. With CIB seven 2.2 they stay at `/camunda`, and the webclient moves
+   from `/webapp` to the path. `CibSevenWebappsVersionOneKeysTest` holds it.
 
 Whether the new webclient at `/webapp` shows the engines of VanillaBP has **not been tested**. The
 web applications of the Camunda 7 adapter and of this adapter in one application are not supported:
@@ -275,10 +285,10 @@ Run them as CIB seven's manual says. The modeler's tables are only used with
 `modeler-enabled: true`. `CibSevenInPlaceSwitchFromCamunda7IT` starts this adapter on the tables the
 Camunda 7 adapter wrote, with `database-schema-update: true`, and the engine starts without them.
 
-The first start deploys a **new version of every process**. The deployments of the Camunda 7
-adapter carry the source `camunda7:<id>`, this adapter's carry `cibseven:<id>`, and the engine's
-duplicate filter compares the source. Running workflows stay on their version and finish there. This
-adapter reads both sources as its own, so its checks do not report the old deployments as somebody
+The first start deploys **no new version**. The Camunda 7 adapter and this adapter write the same
+deployment source, `<adapter id>:<workflow module id>`, and the engine's duplicate filter compares
+it. So the deployments of the Camunda 7 adapter stay the current ones, and running workflows go on
+where they are. This adapter reads them as its own, so its checks do not report them as somebody
 else's (decision 7 in the repository's DECISIONS.md). `CibSevenInPlaceSwitchFromCamunda7IT` starts a
 workflow on the Camunda 7 adapter and finishes it here.
 

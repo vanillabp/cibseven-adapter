@@ -3,8 +3,7 @@ package io.vanillabp.cibseven.migration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.HashMap;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -68,15 +67,18 @@ public class CibSevenInPlaceSwitchFromCamunda7IT {
           "the last task, which only CIB seven can have delivered");
 
       final var repositoryService = engine.getRepositoryService();
+      // both adapters write the source '<adapter id>:<workflow module id>', and the model
+      // is the same. So the engine's duplicate filter finds the deployment of the Camunda 7
+      // adapter, and the first start on CIB seven deploys nothing new
       assertEquals(
-          Set.of("camunda7:engine", "cibseven:engine"),
+          List.of("engine:migration"),
           repositoryService.createDeploymentQuery().list().stream().map(deployment -> deployment.getSource())
-              .collect(Collectors.toSet()),
-          "the first start on CIB seven deploys again, under this adapter's source");
+              .toList(),
+          "the deployment of the Camunda 7 adapter is the one of this adapter, too");
       assertEquals(
-          2,
+          1,
           repositoryService.createProcessDefinitionQuery().processDefinitionKey("MigrationProcess").count(),
-          "so the process has a new version");
+          "so the process keeps its version");
       assertEquals(
           1,
           repositoryService.getProcessDefinition(finished.getProcessDefinitionId()).getVersion(),

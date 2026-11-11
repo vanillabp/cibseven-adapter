@@ -51,8 +51,9 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
    * foreign deployment from this application's own history. The source says how sure the
    * adapter can be about a deployment which carries another name.
    */
-  private static final String OUR_SOURCE = "cibseven:"
-      + ADAPTER_ID;
+  private static final String OUR_SOURCE = ADAPTER_ID
+      + ":"
+      + MODULE;
 
   private ProcessEngine engine;
 
@@ -265,7 +266,7 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
   @DisplayName("Another adapter id of a VanillaBP application is reported, but not as certainly foreign")
   public void anotherAdapterIdIsReportedWithoutCertainty() {
 
-    deployedBySomebodyElse("another-module", "cibseven:the-other-engine", null, java.util.Map
+    deployedBySomebodyElse("another-module", "the-other-engine:another-module", null, java.util.Map
         .of("loan-approval.bpmn", bpmnOf(PROCESS_ID)));
     final var scoping = unscoped();
 
@@ -283,14 +284,15 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
   }
 
   @Test
-  @DisplayName("A deployment of the Camunda 7 adapter on the same database is not certainly foreign either")
+  @DisplayName("A deployment of the Camunda 7 or Operaton adapter on the same database is not certainly foreign either")
   public void aDeploymentOfTheCamunda7AdapterIsNotCertainlyForeign() {
 
-    // what an application leaves behind which ran on the Camunda 7 adapter with this id,
-    // and then switched its database over to CIB seven (see decision 7 in the repository's
-    // DECISIONS.md)
-    deployedBySomebodyElse("another-module", "camunda7:"
-        + ADAPTER_ID, null, java.util.Map.of("loan-approval.bpmn", bpmnOf(PROCESS_ID)));
+    // what an application leaves behind which ran on the Camunda 7 adapter or the Operaton
+    // adapter with this id, and then switched its database over to CIB seven (see decision 7
+    // in the repository's DECISIONS.md). Both write the source in the same form as this
+    // adapter, the adapter id and the workflow module
+    deployedBySomebodyElse("another-module", ADAPTER_ID
+        + ":another-module", null, java.util.Map.of("loan-approval.bpmn", bpmnOf(PROCESS_ID)));
     final var scoping = unscoped();
 
     deployOurModule(scoping, false);
@@ -301,23 +303,7 @@ public class CibSevenIdentifiersTheEngineHoldsTest {
         "another workflow module still holds the id, so it is worth a line");
     assertFalse(
         scoping.getHeldElsewhere().getFirst().certainlyForeign(),
-        "the Camunda 7 adapter wrote it, so it may be this very application before its switch");
-
-  }
-
-  @Test
-  @DisplayName("A deployment of the Operaton adapter on the same database is not certainly foreign either")
-  public void aDeploymentOfTheOperatonAdapterIsNotCertainlyForeign() {
-
-    deployedBySomebodyElse("another-module", "operaton:"
-        + ADAPTER_ID, null, java.util.Map.of("loan-approval.bpmn", bpmnOf(PROCESS_ID)));
-    final var scoping = unscoped();
-
-    deployOurModule(scoping, false);
-
-    assertFalse(
-        scoping.getHeldElsewhere().getFirst().certainlyForeign(),
-        "the Operaton adapter wrote it, and it runs on the same tables");
+        "the other adapter wrote it, so it may be this very application before its switch");
 
   }
 

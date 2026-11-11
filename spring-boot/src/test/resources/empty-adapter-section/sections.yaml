@@ -1,0 +1,12 @@
+vanillabp:
+  adapters:
+    cibseven: {}
+  workflow-modules:
+    loans:
+      adapters:
+        cibseven: {}
+---
+vanillabp:
+  adapters:
+    cibseven:
+      history-time-to-live: P2D
