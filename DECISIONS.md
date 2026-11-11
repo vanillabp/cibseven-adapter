@@ -162,19 +162,25 @@ VanillaBP has not been tested.
 
 CIB seven runs on the database of Camunda 7. CIB seven documents the way: update to Camunda 7.24,
 then swap the jars. So an application can stop on the Camunda 7 adapter and start again on this
-one, on the same database. The Camunda 7 adapter marks its deployments with the source
-`camunda7:<adapter id>`, and this adapter marks them `cibseven:<adapter id>`. A check tells this
-adapter's own deployments from those of somebody else by that source. After the switch, every
-deployment in the database carries the old mark.
+one, on the same database. All three adapters write the source `<adapter id>:<workflow module id>`
+into a deployment (decision 17 in the Camunda 7 adapter's DECISIONS.md). A check tells the
+deployments of a VanillaBP adapter from those of somebody else by that form. So a deployment of the
+Camunda 7 adapter or of the Operaton adapter, the other fork of Camunda 7 on the same tables, counts
+as this adapter's own. A check which reports who else holds a process then does not blame the
+application's own earlier deployments.
 
-So this adapter reads `cibseven:`, `camunda7:` and `operaton:` as "deployed by VanillaBP". The
-Operaton adapter is the other fork of Camunda 7, on the same tables. A check which reports who else
-holds a process then does not blame the application's own earlier deployments.
+The first start after the switch keeps the adapter id, so it writes the same source. The adapters
+prepare a model the same way, so the XML is the same as well. The engine's duplicate filter compares
+both and deploys nothing new. Running workflows go on, on the deployment the Camunda 7 adapter made.
+`CibSevenInPlaceSwitchFromCamunda7IT` starts a workflow on the Camunda 7 adapter and finishes it on
+this one. See [Migrating from Camunda 7](./README.md#migrating-from-camunda-7).
 
-The first start after the switch deploys a new version of every process, because the source
-differs and the engine's duplicate filter compares it. Running workflows stay on the version they
-started on and finish there. `CibSevenInPlaceSwitchFromCamunda7IT` starts a workflow on the Camunda
-7 adapter and finishes it on this one.
+*Changed on 2026-11-10 by the sync of Camunda 7 commit 10b7bad. Before, the Camunda 7 adapter wrote
+`camunda7:<adapter id>`, the Operaton adapter `operaton:<adapter id>` and this adapter
+`cibseven:<adapter id>`. So this adapter read all three marks as its own, and the first start after
+the switch deployed a new version of every process. The Camunda 7 adapter changed the source in its
+decision 17. Now all adapters write the same source, so the extra marks and the new version are
+gone. What the entry decides stays the same.*
 
 ### 8. The tests with the Camunda 7 adapter are modules of their own
 
