@@ -746,9 +746,6 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7AdapterConfiguration
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenAdapterConfiguration
   - org.openrewrite.java.ChangeType:
-      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7EmptySections
-      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenEmptySections
-  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.Camunda7VersionOneKeys
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.CibSevenVersionOneKeys
   - org.openrewrite.java.ChangeType:
@@ -870,6 +867,12 @@ recipeList:
   - org.openrewrite.text.FindAndReplace:
       find: '\bcamunda-bpm-spring-boot-starter-webapp\b'
       replace: cibseven-bpm-spring-boot-starter-webapp-4
+      caseSensitive: true
+      regex: true
+  # The starter of the external task client. It binds 'camunda.bpm.client.*', like Camunda's.
+  - org.openrewrite.text.FindAndReplace:
+      find: '\bcamunda-bpm-spring-boot-starter-external-task-client\b'
+      replace: cibseven-bpm-spring-boot-starter-external-task-client-4
       caseSensitive: true
       regex: true
   - org.openrewrite.text.FindAndReplace:

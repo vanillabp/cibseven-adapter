@@ -178,7 +178,7 @@
       </dependency>
       <dependency>
         <groupId>org.cibseven.bpm.springboot</groupId>
-        <artifactId>camunda-bpm-spring-boot-starter-external-task-client</artifactId>
+        <artifactId>cibseven-bpm-spring-boot-starter-external-task-client-4</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>

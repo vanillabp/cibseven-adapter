@@ -94,7 +94,7 @@ public class CibSevenExternalTaskClientVersionOneKeysTest {
     Assertions.assertNotNull(message);
     Assertions.assertTrue(
         message.contains("  - 'camunda.bpm.client.base-url': Add Camunda's starter "
-            + "camunda-bpm-spring-boot-starter-external-task-client, which reads these keys, or remove the key."),
+            + "cibseven-bpm-spring-boot-starter-external-task-client-4, which reads these keys, or remove the key."),
         message);
 
   }
