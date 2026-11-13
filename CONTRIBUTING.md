@@ -93,6 +93,14 @@ The modules `migration-tests` and `quarkus/migration-tests` run the Camunda 7 ad
 one. Its snapshots, `io.vanillabp:camunda7-adapter-*`, are in the same snapshot repository, so
 these modules need no login either (decision 8 in the repository's DECISIONS.md).
 
+The workflows publish the same snapshots to GitHub Packages of this repository as well, with the
+profile `publish-snapshots` of the root POM, and only where the Actions variable `VANILLABP_PUBLISH`
+is `true`. The vanillabp organization sets it, a fork does not have it. Once the organization sets
+the Actions variable `VANILLABP_SNAPSHOTS_FROM` to `github-packages`, the workflows also read the
+snapshots of the other VanillaBP repositories from there, so the rate limit of Maven Central does
+not stop them. `.github/maven/settings.xml` says how, and every Maven call of a workflow names it.
+On your own machine nothing changes.
+
 ## What a POM hands an application
 
 A tool which only compiles our source belongs in scope `provided`. Write the scope at the

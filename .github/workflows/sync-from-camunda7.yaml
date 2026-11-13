@@ -25,6 +25,15 @@ name: Sync from the Camunda 7 adapter
         default: ""
 permissions:
   contents: read
+# Where Maven reads the snapshots of the other VanillaBP repositories from, see
+# .github/maven/settings.xml: from GitHub Packages once the organization sets the Actions
+# variable VANILLABP_SNAPSHOTS_FROM to 'github-packages', else from the snapshot repository of
+# Maven Central. Reading GitHub Packages needs a token even for public packages. The
+# GITHUB_TOKEN of the run is enough, because every job which runs Maven asks for
+# 'packages: read'.
+env:
+  VBP_SNAPSHOTS_FROM: "${{ vars.VANILLABP_SNAPSHOTS_FROM == 'github-packages' && 'github-packages' || 'central' }}"
+  VBP_PACKAGES_READ_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
 concurrency:
   # two syncs at the same time would both push to 'generated'
   group: sync-from-camunda7
@@ -35,6 +44,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      packages: read
     steps:
       # the whole history, so the script finds the branch 'generated' and the merge into main
       # finds the common ancestor
@@ -93,7 +103,7 @@ jobs:
         id: build
         if: "${{ steps.merge.outputs.conflicts == 'false' }}"
         continue-on-error: true
-        run: mvn -s .github/workflows/maven-settings.xml --batch-mode --no-transfer-progress
+        run: mvn -s .github/maven/settings.xml --batch-mode --no-transfer-progress
           --update-snapshots install
         env:
           CI: false
