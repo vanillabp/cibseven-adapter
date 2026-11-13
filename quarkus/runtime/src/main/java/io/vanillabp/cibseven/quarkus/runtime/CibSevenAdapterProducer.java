@@ -284,15 +284,11 @@ public class CibSevenAdapterProducer {
         .adapters()
         .get(adapterId);
     return new io.vanillabp.cibseven.engine.CibSevenInstanceIdentity(
-        keys == null
+        CibSevenEngineProducer.dataSourceNameOf(keys), keys == null
             ? null
             : keys
-                .dataSourceName()
-                .orElse(null), keys == null
-                    ? null
-                    : keys
-                        .tablePrefix()
-                        .orElse(null));
+                .tablePrefix()
+                .orElse(null));
 
   }
 

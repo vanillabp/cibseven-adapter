@@ -206,7 +206,7 @@ public class CibSevenQuarkusEngineHolder implements CibSevenWorkflowProcessingLi
     // Version 1 had no Quarkus adapter, but an application should get the same engine on both
     // platforms. See decision 58 in the Camunda 7 adapter's DECISIONS.md
     io.vanillabp.cibseven.engine.CibSevenHistoryLevel.applyTo(adapterId, configuration, properties);
-    configuration.setIdGenerator(new org.cibseven.bpm.engine.impl.persistence.StrongUuidGenerator());
+    io.vanillabp.cibseven.engine.CibSevenIdGenerator.applyTo(adapterId, configuration, properties);
 
     // CIB seven's modeler tables. The engine's default would create and check them, and
     // with a table prefix it would refuse to start on a schema without them
