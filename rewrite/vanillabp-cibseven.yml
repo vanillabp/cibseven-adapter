@@ -596,6 +596,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7EngineCustomizerTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenEngineCustomizerTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7EngineExtensionKeysTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenEngineExtensionKeysTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7EngineFactsOnQuarkusTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenEngineFactsOnQuarkusTest
   - org.openrewrite.java.ChangeType:
@@ -683,6 +686,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7XaOnTheApplicationDataSourceTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenXaOnTheApplicationDataSourceTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.Camunda7EngineExtensionKeysEdgeCasesTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.CibSevenEngineExtensionKeysEdgeCasesTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.Camunda7DmnFeelLegacyBehaviorTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.it.CibSevenDmnFeelLegacyBehaviorTest
   - org.openrewrite.java.ChangeType:
@@ -703,6 +709,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.Camunda7AdapterProducer
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.CibSevenAdapterProducer
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.Camunda7EngineExtensionKeys
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.CibSevenEngineExtensionKeys
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.Camunda7EngineProducer
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.runtime.CibSevenEngineProducer
