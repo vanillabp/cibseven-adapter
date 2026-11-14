@@ -161,6 +161,13 @@ keys which `cibseven-adapter-spring-boot-webapps` hands to CIB seven's web appli
 `camunda.bpm.webapp.*` and `camunda.bpm.enabled`, are left alone. The webclient's own keys start
 with `cibseven.` and are not affected.
 
+CIB seven's Quarkus extension did not keep Camunda's prefix: it reads `quarkus.cibseven.*`. On
+Quarkus such a key ends the start, and the message says what to write instead. The check comes
+from the Camunda 7 adapter, and the rule for `ENGINE_EXTENSION_NAME` in
+`rewrite/vanillabp-cibseven.yml` gives it CIB seven's name (`CibSevenEngineExtensionKeysTest`). A
+key of Camunda's extension (`quarkus.camunda.*`) is not checked: no application had one, because
+VanillaBP 1 had no adapter for Quarkus.
+
 During a move from Camunda 7, an application has `camunda7-adapter-spring-boot-webapps` next to
 this adapter, and that module sets `camunda.bpm.enabled` to `false` as its default. That does not
 end the start, because the check skips the property sources which a webapps module of VanillaBP
