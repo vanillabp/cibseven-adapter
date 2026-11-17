@@ -653,6 +653,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7SharedAttributeHidingATaskTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenSharedAttributeHidingATaskTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7SwitchAtTaskLevelEndsTheStartTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenSwitchAtTaskLevelEndsTheStartTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7TablePrefixValidationTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenTablePrefixValidationTest
   - org.openrewrite.java.ChangeType:
@@ -814,6 +817,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.Camunda7IdGeneratorKeyTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.CibSevenIdGeneratorKeyTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.Camunda7SwitchAtTaskLevelEndsTheStartTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.CibSevenSwitchAtTaskLevelEndsTheStartTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.Camunda7VersionOneDataSourceTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.springboot.it.CibSevenVersionOneDataSourceTest

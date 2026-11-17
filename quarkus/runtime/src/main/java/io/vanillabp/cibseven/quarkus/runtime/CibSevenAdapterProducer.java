@@ -39,9 +39,6 @@ public class CibSevenAdapterProducer {
 
   }
 
-  private static final org.slf4j.Logger log = org.slf4j.LoggerFactory
-      .getLogger(CibSevenAdapterProducer.class);
-
   /**
    * What the platform hands the adapter, built the same way for both services of an
    * adapter id.
@@ -212,12 +209,10 @@ public class CibSevenAdapterProducer {
               (
                   workflowModuleId,
                   bpmnProcessId) -> overlay.allowListenersFor(adapterId, workflowModuleId, bpmnProcessId));
-          // a key at a level which does not resolve it changes nothing. Silence would be
-          // worse than a line which says where the key is read
-          io.vanillabp.cibseven.wiring.CibSevenListeners.reportKeysSetAtTaskLevel(
+          // a key at a level which does not read it would change nothing in silence
+          io.vanillabp.cibseven.wiring.CibSevenListeners.refuseKeysSetAtTaskLevel(
               adapterId,
-              overlay.allowListenersKeysAtTaskLevel(adapterId),
-              log::warn);
+              overlay.allowListenersKeysAtTaskLevel(adapterId));
           return deploymentService;
         })
         .toList();
