@@ -211,8 +211,8 @@ public class VanillaBpCibSevenProperties {
   }
 
   /**
-   * The CIB seven keys of one task. This is the most specific level, and
-   * <code>allow-listeners</code> is not resolved at it.
+   * The CIB seven keys of one task. This is the most specific level, and neither
+   * <code>serialization-format</code> nor <code>allow-listeners</code> is resolved at it.
    */
   public static class CibSevenTaskProperties {
 
@@ -261,7 +261,7 @@ public class VanillaBpCibSevenProperties {
 
     /**
      * The serialization format of the shared values the engine has no variable type for,
-     * for this scope.
+     * for this scope. Nothing reads it at task level, so a value set there ends the start.
      */
     private String serializationFormat;
 
@@ -472,6 +472,35 @@ public class VanillaBpCibSevenProperties {
   public java.util.List<String> allowListenersKeysAtTaskLevel(
       final String adapterId) {
 
+    return keysAtTaskLevel(
+        adapterId,
+        io.vanillabp.cibseven.wiring.CibSevenListeners.ALLOW_LISTENERS_KEY,
+        keys -> keys.getAllowListeners() != null);
+
+  }
+
+  /**
+   * Every <code>serialization-format</code> this configuration puts at TASK level, fully
+   * spelled out. Nothing reads this key at that level, so each of them ends the start.
+   *
+   * @param adapterId The adapter id
+   * @return The keys found, in configuration order
+   */
+  public java.util.List<String> serializationFormatKeysAtTaskLevel(
+      final String adapterId) {
+
+    return keysAtTaskLevel(
+        adapterId,
+        io.vanillabp.cibseven.sync.CibSevenSerializationFormats.SERIALIZATION_FORMAT_KEY,
+        keys -> keys.getSerializationFormat() != null);
+
+  }
+
+  private java.util.List<String> keysAtTaskLevel(
+      final String adapterId,
+      final String key,
+      final java.util.function.Predicate<CibSevenScopedProperties> setsTheKey) {
+
     return workflowModules
         .entrySet()
         .stream()
@@ -490,12 +519,10 @@ public class VanillaBpCibSevenProperties {
                       .getValue()
                       .getAdapters()
                       .get(adapterId);
-                  return (keys != null) && (keys.getAllowListeners() != null);
+                  return (keys != null) && setsTheKey.test(keys);
                 })
                 .map(task -> "vanillabp.workflow-modules.%s.workflows.%s.tasks.%s.adapters.%s.%s"
-                    .formatted(
-                        module.getKey(), workflow.getKey(), task.getKey(), adapterId,
-                        io.vanillabp.cibseven.wiring.CibSevenListeners.ALLOW_LISTENERS_KEY))))
+                    .formatted(module.getKey(), workflow.getKey(), task.getKey(), adapterId, key))))
         .toList();
 
   }
