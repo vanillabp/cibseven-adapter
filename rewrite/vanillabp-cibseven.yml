@@ -395,6 +395,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.sync.Camunda7ExpressionIdentifiersTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.sync.CibSevenExpressionIdentifiersTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.sync.Camunda7SerializationFormatsTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.sync.CibSevenSerializationFormatsTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.sync.Camunda7SerializationRoundTripTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.sync.CibSevenSerializationRoundTripTest
   - org.openrewrite.java.ChangeType:
@@ -646,6 +649,9 @@ recipeList:
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7SameDataSourceValidationTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenSameDataSourceValidationTest
+  - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7SerializationFormatAtTaskLevelEndsTheStartTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenSerializationFormatAtTaskLevelEndsTheStartTest
   - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7SeveralDataSourcesTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenSeveralDataSourcesTest

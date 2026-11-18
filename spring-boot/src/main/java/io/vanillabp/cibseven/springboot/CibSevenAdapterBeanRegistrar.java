@@ -217,6 +217,9 @@ public class CibSevenAdapterBeanRegistrar implements BeanRegistrar {
                 io.vanillabp.cibseven.wiring.CibSevenListeners.refuseKeysSetAtTaskLevel(
                     adapterId,
                     deploymentOverlay.allowListenersKeysAtTaskLevel(adapterId));
+                io.vanillabp.cibseven.sync.CibSevenSerializationFormats.refuseKeysSetAtTaskLevel(
+                    adapterId,
+                    deploymentOverlay.serializationFormatKeysAtTaskLevel(adapterId));
                 return deploymentService;
               }));
 
