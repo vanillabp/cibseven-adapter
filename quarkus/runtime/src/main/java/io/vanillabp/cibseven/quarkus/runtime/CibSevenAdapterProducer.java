@@ -213,6 +213,9 @@ public class CibSevenAdapterProducer {
           io.vanillabp.cibseven.wiring.CibSevenListeners.refuseKeysSetAtTaskLevel(
               adapterId,
               overlay.allowListenersKeysAtTaskLevel(adapterId));
+          io.vanillabp.cibseven.sync.CibSevenSerializationFormats.refuseKeysSetAtTaskLevel(
+              adapterId,
+              overlay.serializationFormatKeysAtTaskLevel(adapterId));
           return deploymentService;
         })
         .toList();
