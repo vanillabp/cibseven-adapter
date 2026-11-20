@@ -64,7 +64,7 @@ jobs:
           token: "${{ secrets.SYNC_TOKEN || secrets.GITHUB_TOKEN }}"
       - uses: actions/setup-java@v6
         with:
-          java-version: 25.0.5+8
+          java-version: 27.0.1+100000004
           distribution: temurin
           cache: maven
       - name: Make the code again from the Camunda 7 adapter
