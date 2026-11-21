@@ -52,9 +52,9 @@ surfaces:
     read: setters
     artifacts:
       - org.cibseven.bpm:cibseven-engine
-      # CIB seven 2.2 added the module for Spring 7. The one for Spring 6 stands in for older
-      # versions, which the self test compares with.
-      - "org.cibseven.bpm:cibseven-engine-spring-7|org.cibseven.bpm:cibseven-engine-spring-6"
+      # Since CIB seven 3.0 this is the module for Spring 7. Before, it was the one for Spring 6,
+      # which has the same configuration class, so the self test reads it too.
+      - org.cibseven.bpm:cibseven-engine-spring
     classes:
       - org.cibseven.bpm.engine.spring.SpringProcessEngineConfiguration
       - org.cibseven.bpm.engine.impl.cfg.JakartaTransactionProcessEngineConfiguration
