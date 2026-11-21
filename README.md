@@ -208,7 +208,11 @@ vanillabp:
 ```
 
 The dependencies are `org.cibseven.bpm:cibseven-engine-plugin-spin` and
-`org.cibseven.spin:cibseven-spin-dataformat-json-jackson`. `camunda-xstream` is built against
+`org.cibseven.spin:cibseven-spin-dataformat-json-jackson`. Since CIB seven 3.0 the JSON format needs
+`com.jayway.jsonpath:json-path` 3.0.0 or newer. Spring Boot 4.1 and Quarkus manage an older one,
+and then the engine does not start (`SPIN/JACKSON-JSON-01018`). So import
+`org.cibseven.bpm:cibseven-bom` in your dependency management before the BOM of Spring Boot or
+Quarkus, or set the version of json-path yourself. `camunda-xstream` is built against
 Camunda's packages and does not run on CIB seven, so `application/xstream` needs a plugin of your
 own.
 

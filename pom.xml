@@ -105,6 +105,18 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- CIB seven's own BOM comes first, so its versions win over those of Spring Boot and
+           Quarkus. The JSON data format of Spin in CIB seven 3.0 needs json-path 3, for
+           Jackson 3. Spring Boot 4.1 and Quarkus manage json-path 2, and with it the engine
+           does not start: SPIN/JACKSON-JSON-01018. The BOM also names the versions of MyBatis,
+           Joda-Time and java-uuid-generator the engine is built against. -->
+      <dependency>
+        <groupId>org.cibseven.bpm</groupId>
+        <artifactId>cibseven-bom</artifactId>
+        <version>${cibseven.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
