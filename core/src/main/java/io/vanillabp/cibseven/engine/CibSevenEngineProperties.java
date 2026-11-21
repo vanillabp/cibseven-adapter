@@ -216,10 +216,9 @@ public class CibSevenEngineProperties {
 
   /**
    * Whether the engine runs the tables of CIB seven's modeler (the engine setting
-   * {@code modelerEnabled}). Default <code>false</code>, although the engine's own default is
-   * <code>true</code>: VanillaBP does not use the modeler, and with a table prefix the engine
-   * would not start on a schema without the prefixed modeler tables. See
-   * {@link CibSevenModeler}.
+   * {@code webclientExtensionsEnabled}). Default <code>false</code>: VanillaBP does not use the
+   * modeler, and with a table prefix the engine would not start on a schema without the
+   * prefixed modeler tables. See {@link CibSevenModeler}.
    * <p>
    * There is only this adapter level. The setting belongs to the engine.
    */

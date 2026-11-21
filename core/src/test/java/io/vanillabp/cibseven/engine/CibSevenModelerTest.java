@@ -62,15 +62,15 @@ public class CibSevenModelerTest {
   }
 
   @Test
-  @DisplayName("Without the key the engine leaves the modeler's tables alone, unlike CIB seven's default")
+  @DisplayName("Without the key the engine leaves the modeler's tables alone, whatever CIB seven's default is")
   public void theModelerIsOffByDefault() {
 
     final var configuration = new StandaloneInMemProcessEngineConfiguration();
-    assertTrue(configuration.isModelerEnabled(), "CIB seven's own default changed");
+    configuration.setWebclientExtensionsEnabled(true);
 
     CibSevenModeler.applyTo("cs", configuration, new CibSevenEngineProperties());
 
-    assertFalse(configuration.isModelerEnabled());
+    assertFalse(configuration.isWebclientExtensionsEnabled());
 
   }
 
@@ -84,7 +84,7 @@ public class CibSevenModelerTest {
 
     CibSevenModeler.applyTo("cs", configuration, properties);
 
-    assertTrue(configuration.isModelerEnabled());
+    assertTrue(configuration.isWebclientExtensionsEnabled());
 
   }
 
