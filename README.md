@@ -345,9 +345,10 @@ both adapter ids.
 on Quarkus. On Spring Boot the application runs twice on the same
 databases, first with Camunda 7 in front, then with CIB seven in front. The workflow started before
 the switch finishes on Camunda 7, the new one runs on CIB seven, and each engine runs a FEEL
-decision. Both engines use the same FEEL engine library, `org.camunda.feel:feel-engine` 1.19.3 with
-the classifier `scala-shaded`, so one copy on the classpath serves both. Check this again with each
-new CIB seven minor.
+decision. Both engines use the same FEEL engine library, `org.camunda.feel:feel-engine` with the
+classifier `scala-shaded`, so one copy on the classpath serves both. Camunda 7.24 brings 1.19.3, CIB
+seven 3.0 brings 1.19.6, and Maven puts 1.19.6 on the classpath of the tests. Both engines pass with
+it. Check this again with each new CIB seven minor.
 
 **On Quarkus, both datasources have to be XA datasources** (`quarkus.datasource.<name>.jdbc.transactions: xa`).
 A task of the engine on the second datasource loads the workflow aggregate from the application's
