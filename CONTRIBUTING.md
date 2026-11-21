@@ -201,9 +201,9 @@ By hand it goes like this:
    commit. Merge it with a merge commit, not a squash: `generated` has to stay an ancestor of
    `main`, or the next merge conflicts everywhere.
 
-Read CIB seven's release notes as well when its version changes. CIB seven 2.3 stops shading the
-expression language, so the recipe needs a rule `org.cibseven.bpm.impl.juel.jakarta.el` →
-`jakarta.el` then, and the adapter needs `jakarta.el-api`.
+Read CIB seven's release notes as well when its version changes. A new minor can rename things
+the recipe has to know. CIB seven 3.0, for instance, dropped its copy of the expression language
+API and the suffixes `-7` and `-4` of its Spring artifacts, so the recipe got rules for them.
 
 ### Changing the recipe
 

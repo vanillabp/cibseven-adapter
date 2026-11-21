@@ -55,10 +55,10 @@ What differs from the Camunda 7 adapter:
 
 |       Where       |         Camunda 7 adapter          |                           This adapter                            |
 |-------------------|------------------------------------|-------------------------------------------------------------------|
-| engine            | Camunda 7.24, `org.camunda.bpm`    | CIB seven 2.2, `org.cibseven.bpm`                                 |
+| engine            | Camunda 7.24, `org.camunda.bpm`    | CIB seven 3.0, `org.cibseven.bpm`                                 |
 | adapter type      | `camunda7`                         | `cibseven`                                                        |
 | artifacts         | `io.vanillabp:camunda7-adapter...` | `io.vanillabp:cibseven-adapter...`                                |
-| version           | `2.0.0`                            | `2.0.0-2.2`, with the CIB seven minor                             |
+| version           | `2.0.0`                            | `2.0.0-3.0`, with the CIB seven minor                             |
 | modeler tables    | none                               | off by default, key `modeler-enabled`                             |
 | web applications  | `/camunda`                         | `/camunda`, and the webclient needs a secret                      |
 | deployment source | `camunda7:<id>`                    | `cibseven:<id>`, and `camunda7:` and `operaton:` count as its own |
@@ -78,7 +78,7 @@ other. Click a badge to open its report.
 
 The adapter builds the plain engine itself, on both platforms. It uses neither CIB seven's Spring
 Boot starter nor CIB seven's Quarkus extension, so their versions of Spring Boot and Quarkus do not
-bind the application. On Spring Boot it uses `cibseven-engine-spring-7`, which is built for Spring
+bind the application. On Spring Boot it uses `cibseven-engine-spring`, which is built for Spring
 7 and so for Spring Boot 4. On Quarkus it builds the engine like the Camunda 7 adapter does, on
 Agroal and Narayana. Only JVM mode works, as with Camunda 7.
 
@@ -90,7 +90,7 @@ Spring Boot:
 <dependency>
   <groupId>io.vanillabp</groupId>
   <artifactId>cibseven-adapter-spring-boot</artifactId>
-  <version>2.0.0-2.2-SNAPSHOT</version>
+  <version>2.0.0-3.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -105,7 +105,7 @@ Quarkus, where VanillaBP and the adapter are both extensions:
 <dependency>
   <groupId>io.vanillabp</groupId>
   <artifactId>cibseven-adapter-quarkus</artifactId>
-  <version>2.0.0-2.2-SNAPSHOT</version>
+  <version>2.0.0-3.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -180,11 +180,13 @@ One key is new:
 |-------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | `modeler-enabled` | `false` | Whether the engine creates and checks the tables of CIB seven's modeler and AI chat (`MOD_*`, `CHAT_MESSAGES`). Only the adapter level exists. |
 
-CIB seven 2.2 added a modeler with tables of its own, and the engine switches it on by default. With
-`database-schema-update: false` the engine then checks for the modeler's tables under the table
-prefix, so a prefixed adapter id would not start on a schema with the tables of Camunda 7 only.
-VanillaBP does not use the modeler, so the adapter switches it off (decision 5 in the repository's
-DECISIONS.md). An application which wants it sets `modeler-enabled: true`. With a `table-prefix` it
+CIB seven 2.2 added a modeler with tables of its own. CIB seven 3.0 calls them the webclient
+extensions and switches them on with the engine setting `webclientExtensionsEnabled`. When they are
+on and `database-schema-update` is `false`, the engine checks for the modeler's tables under the
+table prefix. So a prefixed adapter id would not start on a schema with the tables of Camunda 7
+only. VanillaBP does not use the modeler, so the adapter switches it off in every engine (decision 5
+in the repository's DECISIONS.md). In CIB seven 2.2 the engine's default was on, since 3.0 it is
+off. An application which wants it sets `modeler-enabled: true`. With a `table-prefix` it
 then needs the prefixed modeler tables, too, and the boot check says so when they are missing.
 
 Each adapter id gets its own embedded engine, named `vanillabp-cibseven-<id>`. Two engines must not
@@ -254,14 +256,14 @@ applications, as with Camunda 7.
 
 |   Adapter version    | CIB seven version it was built and tested with |
 |----------------------|------------------------------------------------|
-| `2.0.0-2.2-SNAPSHOT` | 2.2.0                                          |
+| `2.0.0-3.0-SNAPSHOT` | 3.0.0                                          |
 
 The root POM pins CIB seven in the property `cibseven.version`, and the adapter version carries the
 CIB seven minor, like the Camunda 8 adapter carries the cluster minor (decision 3 in the
 repository's DECISIONS.md). There is one line of this adapter, and it follows the newest CIB seven
 minor:
 
-- CIB seven publishes only its minors on Maven Central, two a year. Its patch releases (`2.2.1`, ...)
+- CIB seven publishes only its minors on Maven Central, two a year. Its patch releases (`3.0.1`, ...)
   are for the customers of its paid editions. **A patch is safe to use**: it keeps the API and the
   database schema. An application with a patch sets the version in its own dependency management,
   for instance with the `org.cibseven.bpm:cibseven-bom` of that patch.
@@ -273,7 +275,8 @@ minor:
   CIB seven version on Maven Central (`.github/workflows/nightly-next-cibseven.yaml`). A red night
   opens an issue labelled `nightly-next-cibseven`.
 
-CIB seven 2.2 runs on Java 17 and 21. The adapter is built for Java 21, like VanillaBP.
+CIB seven 3.0 runs on Java 17, 21 and 25, on Spring Boot 4.1 and Jakarta EE 11. The adapter is built
+for Java 21, like VanillaBP.
 
 ## Migrating from Camunda 7
 
@@ -292,8 +295,9 @@ This is the way CIB seven documents in "Camunda Migration" of its manual: first 
    `org.camunda.spin.plugin.impl.SpinProcessEnginePlugin` by
    `org.cibseven.spin.plugin.impl.SpinProcessEnginePlugin`.
 
-CIB seven's upgrade scripts from 7.24 to 2.1 and from 2.1 to 2.2 add a row to the schema log and
-the tables of the modeler. They are in `cibseven-engine-2.2.0.jar!/org/cibseven/bpm/engine/db/upgrade/`.
+CIB seven's upgrade scripts from 7.24 to 2.1, from 2.1 to 2.2 and from 2.2 to 3.0 add rows to the
+schema log and the tables of the modeler. They are in
+`cibseven-engine-3.0.0.jar!/org/cibseven/bpm/engine/db/upgrade/`.
 Run them as CIB seven's manual says. The modeler's tables are only used with
 `modeler-enabled: true`. `CibSevenInPlaceSwitchFromCamunda7IT` starts this adapter on the tables the
 Camunda 7 adapter wrote, with `database-schema-update: true`, and the engine starts without them.
@@ -351,10 +355,13 @@ This comes from the Camunda 7 adapter and holds for it as well.
 
 - **The new webclient is untested**, see [CIB seven's web applications](#cib-sevens-web-applications).
 - **Web applications of both engines in one application** are not supported.
-- **CIB seven 2.3 stops shading the expression language.** Its engine then uses `jakarta.el`
-  directly. The recipe needs one more rule for it, the adapter needs `jakarta.el-api`, and a test
-  with Spring Boot's own expression language next to it. That is a story of its own, with the move
-  to 2.3.
+- **CIB seven 3.0 has no classic web applications any more.** Cockpit, Tasklist and Admin at
+  `/camunda` are gone. Only the webclient at `/webapp` is left. So the module
+  `cibseven-adapter-spring-boot-webapps` serves nothing at `/camunda`, and its tests which ask for
+  it fail. What the module does with 3.0 is still open.
+- **CIB seven 3.0 uses the real expression language API**, `jakarta.el` of EL 6, instead of a copy
+  of its own. The recipe rewrites the imports. The API comes with `cibseven-engine`, through
+  `cibseven-engine-dmn`, which also brings Expressly as the implementation.
 
 ## Building
 
