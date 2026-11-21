@@ -1,15 +1,13 @@
 package io.vanillabp.cibseven.wiring;
 
-import java.beans.FeatureDescriptor;
-import java.util.Iterator;
 
 import org.cibseven.bpm.engine.ProcessEngineException;
 import org.cibseven.bpm.engine.impl.persistence.entity.ExecutionEntity;
-import org.cibseven.bpm.impl.juel.jakarta.el.ELContext;
-import org.cibseven.bpm.impl.juel.jakarta.el.ELResolver;
 
 import io.vanillabp.integration.adapter.spi.workflowtask.WorkflowTaskInvoker;
 import io.vanillabp.integration.adapter.spi.workflowtask.WorkflowTaskOutcome;
+import jakarta.el.ELContext;
+import jakarta.el.ELResolver;
 
 /**
  * Resolves the top-level EL names of BPMN expressions against the WIRED TASKS of VanillaBP.
@@ -413,15 +411,6 @@ public class CibSevenTaskELResolver extends ELResolver {
       final Object base) {
 
     return Object.class;
-
-  }
-
-  @Override
-  public Iterator<FeatureDescriptor> getFeatureDescriptors(
-      final ELContext context,
-      final Object base) {
-
-    return null;
 
   }
 

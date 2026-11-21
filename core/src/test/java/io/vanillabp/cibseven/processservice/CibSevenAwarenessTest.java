@@ -11,9 +11,6 @@ import org.cibseven.bpm.engine.RuntimeService;
 import org.cibseven.bpm.engine.TaskService;
 import org.cibseven.bpm.engine.runtime.ExecutionQuery;
 import org.cibseven.bpm.engine.task.TaskQuery;
-import org.cibseven.bpm.impl.juel.jakarta.el.ELException;
-import org.cibseven.bpm.impl.juel.jakarta.el.MethodNotFoundException;
-import org.cibseven.bpm.impl.juel.jakarta.el.PropertyNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +20,9 @@ import io.vanillabp.integration.adapter.spi.PhaseTwoFailureKind;
 import io.vanillabp.integration.adapter.spi.WorkflowAwareness;
 import io.vanillabp.integration.spi.AggregatePersistenceAware;
 import io.vanillabp.integration.test.utils.SuppressOutputExtension;
+import jakarta.el.ELException;
+import jakarta.el.MethodNotFoundException;
+import jakarta.el.PropertyNotFoundException;
 
 /**
  * What the adapter answers when its engine cannot answer at all, and how it classifies a

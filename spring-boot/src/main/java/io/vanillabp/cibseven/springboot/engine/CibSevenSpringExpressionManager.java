@@ -1,13 +1,13 @@
 package io.vanillabp.cibseven.springboot.engine;
 
 import org.cibseven.bpm.engine.spring.SpringExpressionManager;
-import org.cibseven.bpm.impl.juel.jakarta.el.CompositeELResolver;
-import org.cibseven.bpm.impl.juel.jakarta.el.ELResolver;
 import org.springframework.context.ApplicationContext;
 
 import io.vanillabp.cibseven.wiring.CibSevenTaskELResolver;
 import io.vanillabp.cibseven.wiring.CibSevenTaskRegistry;
 import io.vanillabp.integration.adapter.spi.workflowtask.WorkflowTaskInvoker;
+import jakarta.el.CompositeELResolver;
+import jakarta.el.ELResolver;
 
 /**
  * Camunda's Spring-bean-aware expression manager extended by VanillaBP's
