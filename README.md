@@ -60,7 +60,7 @@ What differs from the Camunda 7 adapter:
 | artifacts         | `io.vanillabp:camunda7-adapter...` | `io.vanillabp:cibseven-adapter...`                                |
 | version           | `2.0.0`                            | `2.0.0-3.0`, with the CIB seven minor                             |
 | modeler tables    | none                               | off by default, key `modeler-enabled`                             |
-| web applications  | `/camunda`                         | `/camunda`, and the webclient needs a secret                      |
+| web applications  | `/camunda`                         | webclient at `/webapp`, `/camunda` only with a module of its own  |
 | deployment source | `camunda7:<id>`                    | `cibseven:<id>`, and `camunda7:` and `operaton:` count as its own |
 
 The BPMN namespace does not change. CIB seven reads only `http://camunda.org/schema/1.0/bpmn`, the
@@ -109,17 +109,18 @@ Quarkus, where VanillaBP and the adapter are both extensions:
 </dependency>
 ```
 
-|           Module            |                Artifact                |                        Contents                         |
-|-----------------------------|----------------------------------------|---------------------------------------------------------|
-| `core`                      | `cibseven-adapter`                     | Platform-neutral SPI implementations and engine wiring. |
-| `spring-boot`               | `cibseven-adapter-spring-boot`         | Spring Boot auto-configuration registering the adapter. |
-| `spring-boot-webapps`       | `cibseven-adapter-spring-boot-webapps` | Optional: CIB seven's Cockpit, Tasklist and Admin.      |
-| `quarkus/runtime`           | `cibseven-adapter-quarkus`             | The Quarkus extension.                                  |
-| `quarkus/deployment`        | `cibseven-adapter-quarkus-deployment`  | The build steps of the Quarkus extension.               |
-| `integration-tests`         | (not published)                        | Spring Boot tests against the real engine.              |
-| `quarkus/integration-tests` | (not published)                        | Quarkus tests against the real engine.                  |
-| `migration-tests`           | (not published)                        | This adapter next to the Camunda 7 adapter, decision 8. |
-| `quarkus/migration-tests`   | (not published)                        | The same on Quarkus.                                    |
+|            Module            |                   Artifact                    |                        Contents                         |
+|------------------------------|-----------------------------------------------|---------------------------------------------------------|
+| `core`                       | `cibseven-adapter`                            | Platform-neutral SPI implementations and engine wiring. |
+| `spring-boot`                | `cibseven-adapter-spring-boot`                | Spring Boot auto-configuration registering the adapter. |
+| `spring-boot-webapps`        | `cibseven-adapter-spring-boot-webapps`        | Optional: CIB seven's webclient.                        |
+| `spring-boot-webapps-legacy` | `cibseven-adapter-spring-boot-webapps-legacy` | Optional: the classic Cockpit, Tasklist and Admin.      |
+| `quarkus/runtime`            | `cibseven-adapter-quarkus`                    | The Quarkus extension.                                  |
+| `quarkus/deployment`         | `cibseven-adapter-quarkus-deployment`         | The build steps of the Quarkus extension.               |
+| `integration-tests`          | (not published)                               | Spring Boot tests against the real engine.              |
+| `quarkus/integration-tests`  | (not published)                               | Quarkus tests against the real engine.                  |
+| `migration-tests`            | (not published)                               | This adapter next to the Camunda 7 adapter, decision 8. |
+| `quarkus/migration-tests`    | (not published)                               | The same on Quarkus.                                    |
 
 The class names follow the Camunda 7 adapter with `CibSeven` in place of `Camunda7`. An extension
 which works with this adapter, such as the Business Cockpit, uses for example `CibSevenAdapter`,
@@ -218,19 +219,59 @@ own.
 
 ## CIB seven's web applications
 
-The optional module `cibseven-adapter-spring-boot-webapps` serves Cockpit, Tasklist and Admin at
-`/camunda` against the engines this adapter built. It works like the module of the Camunda 7
-adapter: CIB seven's starter still reads `camunda.bpm.*`, so the module switches
-`camunda.bpm.enabled` off, and it registers VanillaBP's engines with the runtime container.
+CIB seven 3.0 has two kinds of web applications. Two modules serve them, both optional and both
+for Spring Boot only:
 
-Three things differ:
+|            Module            |                   Artifact                    |                        Serves                         |
+|------------------------------|-----------------------------------------------|-------------------------------------------------------|
+| `spring-boot-webapps`        | `cibseven-adapter-spring-boot-webapps`        | CIB seven's new webclient at `/webapp`                |
+| `spring-boot-webapps-legacy` | `cibseven-adapter-spring-boot-webapps-legacy` | the classic Cockpit, Tasklist and Admin at `/camunda` |
 
-1. **The webclient needs a secret.** CIB seven's starter for Spring Boot 4,
-   `cibseven-bpm-spring-boot-starter-webapp-4`, also brings CIB seven's new webclient, at `/webapp`.
-   It signs its login tokens with `cibseven.webclient.authentication.jwtSecret` and does not start
-   without it. The module does not make up a secret, because every instance of the application has
-   to use the same one (decision 6 in the repository's DECISIONS.md). It checks the key while the
-   application boots. Set it to a base64 text of at least 155 characters, for example:
+The key `vanillabp.webapps.ui` chooses between them, for the whole application: `webclient` (the
+default), `legacy` or `both`. `vanillabp.adapters.<id>.webapps.enabled` still switches the web
+applications off for one adapter id. The [wiki page Web
+applications](https://github.com/vanillabp/cibseven-adapter/wiki/Web-applications) describes this
+for users. `DECISIONS.pending/cibseven-3.0.md` says why the default is the webclient and why the
+classic web applications are a module of their own.
+
+```mermaid
+flowchart LR
+  key["vanillabp.webapps.ui"] --> filter["CibSevenWebappsUiFilter"]
+  filter -->|webclient, both| wc["CIB seven's webclient<br>/webapp"]
+  filter -->|legacy, both| legacy["CIB seven's legacy starter<br>/camunda"]
+  legacy -. "needs" .- module["spring-boot-webapps-legacy"]
+```
+
+### The module `spring-boot-webapps`
+
+It works like the module of the Camunda 7 adapter, and most of its code comes from there. CIB
+seven's starter still reads `camunda.bpm.*`, so the module switches `camunda.bpm.enabled` off, and
+it registers VanillaBP's engines with the runtime container. What is CIB seven's own:
+
+1. **`CibSevenWebappsUi`** reads the key. A value which is none of the three ends the start. So
+   does `legacy` or `both` without the legacy module on the class path. The message names the
+   coordinates of the module and the wiki page. The class finds the module by the name of its
+   class `CibSevenLegacyWebappsAutoConfiguration`, because this module must not depend on it.
+   `CibSevenWebappsUiProperties` binds the key as well, because the platform ends the start for a
+   key below `vanillabp` which no `@ConfigurationProperties` class binds. Without this module
+   nothing binds it, and the key ends the start (`CibSevenWebappsKeyWithoutTheModuleTest` in
+   `spring-boot`).
+2. **`CibSevenWebappsUiFilter`** is an `AutoConfigurationImportFilter`. Both kinds of web
+   applications switch on with the same key of CIB seven, `camunda.bpm.webapp.enabled`. So the
+   filter leaves out the auto-configurations of the kind the application did not choose, before
+   Spring Boot reads them. An entry of the array it gets can be `null`: an earlier filter removed
+   it already, and it stays removed.
+3. **The webclient talks to the engines directly.** Its default provider calls the engine REST
+   API at `http://localhost:8080/engine-rest`, which an application of VanillaBP does not have.
+   `CibSevenWebappsEnvironmentPostProcessor` sets `cibseven.webclient.bpm.provider` to
+   `org.cibseven.webapp.providers.SevenDirectProvider`, as a default the application can
+   override. That provider finds the engines in the runtime container.
+4. **The webclient needs a secret.** It signs its login tokens with
+   `cibseven.webclient.authentication.jwtSecret` and does not start without it. The module does
+   not make up a secret, because every instance of the application has to use the same one
+   (decision 6 in the repository's DECISIONS.md). `CibSevenWebclientSecret` checks the key while the
+   application boots, but only where the webclient is served. Set it to a base64 text of at
+   least 155 characters, for example:
 
    ```bash
    openssl rand -base64 120 | tr -d '\n'
@@ -242,19 +283,45 @@ Three things differ:
        authentication:
          jwtSecret: ${WEBCLIENT_JWT_SECRET}
    ```
-2. **`/camunda` does not redirect.** CIB seven answers `GET /camunda` with a page of its own. The
-   classic web applications are at `/camunda/app/cockpit/`, `/camunda/app/tasklist/` and
-   `/camunda/app/admin/`, as before.
-3. **`camunda.bpm.webapp.application-path` moves the webclient.** With Camunda 7 the key moves
-   the classic web applications. With CIB seven 2.2 they stay at `/camunda`, and the webclient moves
-   from `/webapp` to the path. `CibSevenWebappsVersionOneKeysTest` holds it.
+5. **`camunda.bpm.webapp.application-path` moves the webclient.** With Camunda 7 the key moves the
+   classic web applications. With CIB seven it moves the webclient away from `/webapp`. The classic
+   web applications move with `camunda.bpm.webapp.legacy-application-path`.
+   `CibSevenWebappsVersionOneKeysTest` and `CibSevenLegacyWebappsPathsTest` hold both.
 
-Whether the new webclient at `/webapp` shows the engines of VanillaBP has **not been tested**. The
-web applications of the Camunda 7 adapter and of this adapter in one application are not supported:
-both starters read `camunda.bpm.*` and both want `/camunda`. On Quarkus there are no web
+Some test classes came from the Camunda 7 adapter and asked for `/camunda`. In this module they ask
+the webclient now (`CibSevenWebappsBootTest`, `CibSevenWebappsWithoutAdminUserTest`). Their
+versions for `/camunda` are in the legacy module. `CibSevenWebappsTwoAdapterIdsTest` moved there
+as `CibSevenLegacyWebappsTwoAdapterIdsTest`, and `CibSevenWebclientTest` does its work for the
+webclient. A sync which changes one of these tests in the Camunda 7 adapter brings the change to the
+old place. Carry it over by hand.
+
+### The module `spring-boot-webapps-legacy`
+
+CIB seven deprecated the classic web applications with 3.0. They are a starter of their own,
+`org.cibseven.bpm.springboot:cibseven-bpm-spring-boot-starter-webapp-legacy`. It brings their
+classes, but not their UI files. Those are only in `org.cibseven.bpm.webapp:cibseven-webapp-webjar`
+in version 2.2.0. Version 3.0.0 of the same artifact holds the UI of the webclient, and Maven puts
+only one version of an artifact on the class path. So the module unpacks the UI files of 2.2.0 into
+its own jar (`maven-dependency-plugin`, property `cibseven-legacy-webjar.version` in the root POM).
+
+The module depends on `spring-boot-webapps`, never the other way round. Its only class,
+`CibSevenLegacyWebappsAutoConfiguration`, writes to the log whether the classic web applications
+are served. Where the module is there and the key says `webclient`, the log says how to switch them
+on. CIB seven's own auto-configuration serves them.
+
+`CibSevenLegacyWebappsBootTest`, `CibSevenTasklistCompletesATaskTest`, `CibSevenWebappsBothTest`,
+`CibSevenLegacyWebappsStayOffTest` and `CibSevenLegacyWebappsPathsTest` test this module.
+
+### Both modules
+
+The web applications of the Camunda 7 adapter and of this adapter in one application are not
+supported: both starters read `camunda.bpm.*` and both want `/camunda`. On Quarkus there are no web
 applications, as with Camunda 7.
 
-`CibSevenWebappsBootTest` and `CibSevenWebclientSecretTest` test this module.
+`CibSevenWebclientTest` and `CibSevenWebclientCompletesATaskTest` show that the webclient serves
+the engines of VanillaBP: it lists the engines of two adapter ids, checks a login against the
+engine the user chose, and completes a user task, after which VanillaBP runs the next service task.
+`CibSevenTasklistCompletesATaskTest` does the same in the classic Tasklist.
 
 ## Supported CIB seven version
 
@@ -358,12 +425,11 @@ This comes from the Camunda 7 adapter and holds for it as well.
 
 ## Known issues
 
-- **The new webclient is untested**, see [CIB seven's web applications](#cib-sevens-web-applications).
 - **Web applications of both engines in one application** are not supported.
-- **CIB seven 3.0 has no classic web applications any more.** Cockpit, Tasklist and Admin at
-  `/camunda` are gone. Only the webclient at `/webapp` is left. So the module
-  `cibseven-adapter-spring-boot-webapps` serves nothing at `/camunda`, and its tests which ask for
-  it fail. What the module does with 3.0 is still open.
+- **The classic web applications are deprecated by CIB seven.** Their UI files exist only in
+  `cibseven-webapp-webjar` 2.2.0, and the module `spring-boot-webapps-legacy` carries a copy of
+  them. When CIB seven drops the legacy starter, the module goes as well. See
+  [CIB seven's web applications](#cib-sevens-web-applications).
 - **CIB seven 3.0 uses the real expression language API**, `jakarta.el` of EL 6, instead of a copy
   of its own. The recipe rewrites the imports. The API comes with `cibseven-engine`, through
   `cibseven-engine-dmn`, which also brings Expressly as the implementation.
