@@ -231,7 +231,7 @@ The key `vanillabp.webapps.ui` chooses between them, for the whole application: 
 default), `legacy` or `both`. `vanillabp.adapters.<id>.webapps.enabled` still switches the web
 applications off for one adapter id. The [wiki page Web
 applications](https://github.com/vanillabp/cibseven-adapter/wiki/Web-applications) describes this
-for users. Decision 14 in the repository's DECISIONS.md says why the default is the webclient and
+for users. Decision 12 in the repository's DECISIONS.md says why the default is the webclient and
 why the classic web applications are a module of their own.
 
 ```mermaid
