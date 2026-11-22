@@ -603,6 +603,9 @@ recipeList:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7DefaultDataSourceByItsNameTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenDefaultDataSourceByItsNameTest
   - org.openrewrite.java.ChangeType:
+      oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7EmergencyExitAsSystemPropertyTest
+      newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenEmergencyExitAsSystemPropertyTest
+  - org.openrewrite.java.ChangeType:
       oldFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.Camunda7EngineCustomizerTest
       newFullyQualifiedTypeName: io.vanillabp.camunda7.quarkus.CibSevenEngineCustomizerTest
   - org.openrewrite.java.ChangeType:
