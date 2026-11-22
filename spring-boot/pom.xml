@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.vanillabp</groupId>
     <artifactId>cibseven-adapter-parent</artifactId>
-    <version>2.0.0-2.2-SNAPSHOT</version>
+    <version>2.0.0-3.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>cibseven-adapter-spring-boot</artifactId>
@@ -55,7 +55,7 @@
          targets Spring Boot 3.5.x. -->
     <dependency>
       <groupId>org.cibseven.bpm</groupId>
-      <artifactId>cibseven-engine-spring-7</artifactId>
+      <artifactId>cibseven-engine-spring</artifactId>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
@@ -107,7 +107,7 @@
       <!-- reads camunda.bpm.client.*, which the adapter then leaves alone. See
            CibSevenExternalTaskClientVersionOneKeysTest -->
       <groupId>org.cibseven.bpm.springboot</groupId>
-      <artifactId>cibseven-bpm-spring-boot-starter-external-task-client-4</artifactId>
+      <artifactId>cibseven-bpm-spring-boot-starter-external-task-client</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
