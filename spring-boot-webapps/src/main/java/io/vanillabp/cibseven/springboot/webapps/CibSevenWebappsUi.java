@@ -16,7 +16,7 @@ import org.springframework.util.ClassUtils;
  * The default is CIB seven's new webclient. The classic Cockpit, Tasklist and Admin are in the
  * module <code>cibseven-adapter-spring-boot-webapps-legacy</code>, which the application adds
  * itself. A choice which needs that module ends the start where it is missing. See
- * {@code DECISIONS.pending/cibseven-3.0.md} in the repository for why.
+ * decision 14 in the repository's DECISIONS.md for why.
  * </p>
  */
 public enum CibSevenWebappsUi {

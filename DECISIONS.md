@@ -160,9 +160,12 @@ checks the key while the application boots, by the same two rules the webclient 
 the key, the length and a way to get a secret when one of them is broken.
 
 CIB seven answers `GET /camunda` with a page of its own, where Camunda 7 redirects into
-`/camunda/app/`. The two tests which asked for the redirect accept the page as well. The classic web
-applications themselves are where they were. Whether the new webclient shows the engines of
-VanillaBP has not been tested.
+`/camunda/app/`. The two tests which asked for the redirect accept the page as well. With CIB seven
+3.0 the webclient is the default, and the classic web applications need a module of their own
+(decision 14).
+
+**Changed in part:** see decision 14. The check of the secret runs only where the webclient is
+served.
 
 ### 7. A deployment of the Camunda 7 adapter or of the Operaton adapter counts as one of this adapter's own
 
@@ -307,3 +310,180 @@ this repository, on a laptop and in a pull request as well.
 
 **Where it is referred to:** the addendum line of decision 10 and nothing else in this repository.
 In the Camunda 7 adapter, the comments in `pom.xml` and in `.mvn/maven.config` describe it.
+
+### 12. A serialization format set at task level ends the start
+
+Decided by the maintainer on 2026-11-17 for the Camunda 7 adapter. It came to this repository with
+the sync of Camunda 7 commit 970032f. `serialization-format` is not a value of a single task. It
+goes down to the workflow and no further. A key nobody reads ends the start, always.
+
+The Camunda 7 adapter adds one sentence to decision 9 in camunda7-adapter for it: "There is no task
+level. A value set there ends the start." That log carries the change, and decision 1 makes it hold
+here. The rest of that decision stays as it is.
+
+#### What was wrong
+
+The task level shares its keys with the workflow level. So both platforms bound
+`serialization-format` at task level too, but nothing read it there. A value set at task level
+changed nothing, and the start did not say so. The variables of that task were written in the
+format of the workflow, the workflow module or the adapter, not in the one the line asked for.
+Decision 67 in camunda7-adapter had fixed the same gap for `allow-listeners`, and only for that key.
+
+#### The decision
+
+A value of `serialization-format` at task level ends the start, on both platforms. The message is
+built like the one of decision 67 in camunda7-adapter: it names each such key as it was written, the
+three levels where the key works, and why there is no task level for it. It tells the reader to
+move the value to one of the three levels, or to remove it.
+
+Why there is no task level: all tasks of a workflow read and write the same variables. A value one
+task writes in one format is read by the next task, by an expression in the model and by Cockpit.
+So one workflow needs one format.
+
+As in decision 67 in camunda7-adapter, the adapter ends the start while it builds the deployment
+service, and Quarkus needs no build step, because Quarkus does not end the start on this key by
+itself.
+
+After this, every key of this adapter which the task level binds is either read there or ends the
+start: `serialization-format` and `allow-listeners` are the only ones, and both end the start.
+
+#### Where it is referred to
+
+- Decision 9 in camunda7-adapter (see above).
+- `CibSevenSerializationFormats` in `core`: its class comment, `SERIALIZATION_FORMAT_KEY` and
+  `refuseKeysSetAtTaskLevel`.
+- `CibSevenEngineProperties` in `core`, the field comment of `serializationFormat`.
+- `CibSevenAdapterBeanRegistrar` in `spring-boot`, where it builds the deployment service.
+- `CibSevenAdapterProducer` in `quarkus/runtime`, where it builds the deployment services.
+- `VanillaBpCibSevenProperties` in `spring-boot` and in `quarkus/runtime`:
+  `serializationFormatKeysAtTaskLevel`, `keysAtTaskLevel`, the comments of the task section and of
+  `serializationFormat`.
+- `spring-boot/src/main/resources/META-INF/additional-spring-configuration-metadata.json`, the
+  description of `serialization-format`.
+- The README, `UPGRADE.md` and the wiki of the Camunda 7 adapter. This repository does not copy
+  them.
+- The tests `CibSevenSerializationFormatsTest` (core), `CibSevenSwitchAtTaskLevelEndsTheStartTest`
+  (spring-boot) and `CibSevenSerializationFormatAtTaskLevelEndsTheStartTest` (quarkus/deployment).
+
+### 13. The emergency exit for suspended definitions is bound, and written as configuration it ends the start
+
+Built for platform story 2185 on 2026-11-21, for the Camunda 7 adapter. It came to this repository
+with the sync of Camunda 7 commit 020633c.
+
+The Camunda 7 adapter changes one sentence of decision 48 in camunda7-adapter and adds one paragraph
+to decision 12 in camunda7-adapter for it:
+
+- Decision 48 in camunda7-adapter said that `vanillabp.ignore-suspended-process-definitions` has no
+  entry in the configuration metadata. Now the configuration processor writes an entry for it,
+  because the overlay binds it. Its description says that it is a system property or an environment
+  variable, and not a key of `application.yaml`.
+- Decision 12 in camunda7-adapter gets the paragraph "How the platforms see the key" below.
+
+That log carries the change, and decision 1 makes it hold here. The rest of both decisions stays as
+it is.
+
+#### What was wrong
+
+Since platform story 2185, Spring Boot ends the start for a key below `vanillabp` which no
+`@ConfigurationProperties` class binds. A system property and an environment variable are property
+sources as well. The adapter read the switch with `System.getProperty` and `System.getenv`, so
+nothing bound it. An operator who set the switch in an emergency got a start which ended with
+"Nothing reads this key below 'vanillabp'". That is the one situation the switch exists for.
+
+#### How the platforms see the key
+
+On Spring Boot the adapter's overlay `VanillaBpCibSevenProperties` binds
+`ignore-suspended-process-definitions` at the root of the tree, as a string. That is all the field
+does. `SuspendedProcessDefinitions` still reads the system property and the environment variable
+itself and decides what the switch does. The field is a string, so a value which is not `true`
+still gets the warning of decision 12 in camunda7-adapter and not a conversion error.
+
+Bound, a value in `application.yaml` would be taken over and still change nothing. So the adapter
+ends the start when the key is written in any property source except the system properties and the
+environment variables. The message names where it is written and the two ways to set it. A command
+line argument `--vanillabp.ignore-suspended-process-definitions=true` is such a source too. It ends
+the start for the same reason, and the message says to use `-D` instead.
+
+Quarkus needs nothing. SmallRye does not report a system property or an environment variable which
+no mapping knows, and a test shows that a start with the system property goes on and logs the
+warning. A value in `application.yaml` or `application.properties` is an unknown key there, and
+Quarkus ends the start with its own message.
+
+The key stays at the root and has no adapter part, as decision 12 in camunda7-adapter says.
+
+#### Where it is referred to
+
+- Decisions 12 and 48 in camunda7-adapter (see above).
+- `SuspendedProcessDefinitions` in `core`: `refuseTheSwitchSetAsConfiguration`.
+- `VanillaBpCibSevenProperties` in `spring-boot`: the field `ignoreSuspendedProcessDefinitions`.
+- `CibSevenAdapterBeanRegistrar` in `spring-boot`: `whereTheSwitchIsSetAsConfiguration`.
+- The README of the Camunda 7 adapter, the section "A suspended version counts, and how to get past
+  it once". This repository does not copy it.
+- The tests `EmergencyExitForSuspendedDefinitionsTest` (spring-boot),
+  `CibSevenEmergencyExitAsSystemPropertyTest` (quarkus/deployment) and
+  `CibSevenOldProcessVersionsIT#theEmergencyExitTakesTheSuspendedVersionOut` (integration-tests).
+
+### 14. The webclient is the default, and the classic web applications are a module of their own
+
+Decided by the maintainer on 2026-11-22, with the move to CIB seven 3.0.
+
+This replaces decision 6 in part. The secret stays as decision 6 says. Two things change:
+
+- Decision 6 said "The classic web applications themselves are where they were. Whether the new
+  webclient shows the engines of VanillaBP has not been tested." It now says: "With CIB seven 3.0
+  the webclient is the default, and the classic web applications need a module of their own
+  (decision 14)."
+- The check of the secret runs only where the webclient is served. With only the classic web
+  applications there is no webclient, and nothing signs a token.
+
+#### What changed in CIB seven 3.0
+
+CIB seven 3.0 deprecated the classic Cockpit, Tasklist and Admin. Its web application starter now
+brings only the new webclient at `/webapp`. The classic web applications are a starter of their own,
+`cibseven-bpm-spring-boot-starter-webapp-legacy`. That starter brings their classes, but not their
+UI files. The UI files are only in `cibseven-webapp-webjar` 2.2.0. Version 3.0.0 of the same
+artifact holds the UI of the webclient, and Maven puts only one version of an artifact on the class
+path.
+
+#### The decision
+
+1. The key `vanillabp.webapps.ui` chooses the web applications, for the whole application:
+   `webclient`, `legacy` or `both`. It is one key for all adapter ids, because both kinds of web
+   applications find their engines in the same runtime container and show all of them.
+   `vanillabp.adapters.<id>.webapps.enabled` still switches the web applications off for one
+   adapter id.
+2. The default is `webclient`. An application which moves to CIB seven 3.0 wants the new UI.
+3. The classic web applications are in the optional module
+   `cibseven-adapter-spring-boot-webapps-legacy`, which the application adds itself. It holds CIB
+   seven's legacy starter and a copy of the UI files of `cibseven-webapp-webjar` 2.2.0. The module
+   `cibseven-adapter-spring-boot-webapps` does not depend on it. So an application which does not
+   want a deprecated UI does not get its jars.
+4. `legacy` or `both` without the legacy module ends the start. The message names the coordinates
+   of the module and the page of the wiki. With the module and `webclient`, the classic web
+   applications stay off, and the log says how to switch them on.
+
+#### The trap for an application of Camunda 7
+
+`camunda.bpm.webapp.application-path` moved Cockpit, Tasklist and Admin with Camunda 7. With CIB
+seven it moves the webclient. The classic web applications move with
+`camunda.bpm.webapp.legacy-application-path`. An application which set the first key for Camunda 7
+finds its webclient at that path, and the classic web applications at `/camunda`, if it added the
+legacy module. The wiki says so on the page about the web applications.
+
+#### Rejected
+
+- **The classic web applications in the main module, switched by the key.** Every application would
+  carry the jars of a deprecated UI, and every CVE report about them.
+- **`both` as the default.** It would keep the old paths working for an application from Camunda 7.
+  But the classic web applications are deprecated, and a default would keep them alive longer than
+  CIB seven does.
+- **A key per adapter id.** Both kinds of web applications show every engine of the runtime
+  container, so a choice per adapter id cannot be kept.
+
+#### Where it is cited
+
+- javadoc of `CibSevenWebappsUi`
+- the root `pom.xml`, comment on `cibseven-legacy-webjar.version`
+- `README.md`, section "CIB seven's web applications"
+- the wiki page "Web applications" describes the rule without citing it
+
