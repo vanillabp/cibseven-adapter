@@ -477,7 +477,7 @@ public interface VanillaBpCibSevenProperties {
 
     /**
      * OPTIONAL: whether the engine runs the tables of CIB seven's modeler. The default is
-     * <code>false</code>, unlike the engine's own default. See {@code CibSevenModeler}.
+     * <code>false</code>. See {@code CibSevenModeler}.
      *
      * @return The configured answer, empty for <code>false</code>
      */

@@ -1,0 +1,16 @@
+spring:
+  datasource:
+    username: sa
+    password: ""
+vanillabp:
+  adapters:
+    cibseven:
+      type: cibseven
+  prioritized-adapters:
+    - cibseven
+  webapps:
+    ui: legacy
+cibseven:
+  webclient:
+    authentication:
+      jwtSecret: AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8gISIjJCUmJygpKissLS4vMDEyMzQ1Njc4OTo7PD0+P0BBQkNERUZHSElKS0xNTk9QUVJTVFVWV1hZWltcXV5fYGFiY2RlZmdoaWprbG1ub3BxcnN0dXZ3

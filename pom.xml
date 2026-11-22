@@ -18,7 +18,7 @@
 
   <groupId>io.vanillabp</groupId>
   <artifactId>cibseven-adapter-parent</artifactId>
-  <version>2.0.0-2.2-SNAPSHOT</version>
+  <version>2.0.0-3.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>VanillaBP CIB seven adapter</name>
   <description>VanillaBP Version 2 adapter for CIB seven (embedded engine).</description>
@@ -47,6 +47,7 @@
     <module>core</module>
     <module>spring-boot</module>
     <module>spring-boot-webapps</module>
+    <module>spring-boot-webapps-legacy</module>
     <module>quarkus/runtime</module>
     <module>quarkus/deployment</module>
     <module>quarkus/integration-tests</module>
@@ -94,7 +95,11 @@
          that patch, because a patch keeps the API and the schema. It must not set another
          minor: the adapter uses engine classes under '.impl.', which CIB seven may change in
          any minor. -->
-    <cibseven.version>2.2.0</cibseven.version>
+    <cibseven.version>3.0.0</cibseven.version>
+    <!-- The UI files of the classic Cockpit, Tasklist and Admin. CIB seven ships them only in
+         this release of cibseven-webapp-webjar. The module spring-boot-webapps-legacy copies
+         them into its own jar, see DECISIONS.pending/cibseven-3.0.md. -->
+    <cibseven-legacy-webjar.version>2.2.0</cibseven-legacy-webjar.version>
     <spring-boot.version>4.1.2</spring-boot.version>
     <quarkus.version>3.40.1.2</quarkus.version>
     <lombok.version>1.18.48</lombok.version>
@@ -105,6 +110,18 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- CIB seven's own BOM comes first, so its versions win over those of Spring Boot and
+           Quarkus. The JSON data format of Spin in CIB seven 3.0 needs json-path 3, for
+           Jackson 3. Spring Boot 4.1 and Quarkus manage json-path 2, and with it the engine
+           does not start: SPIN/JACKSON-JSON-01018. The BOM also names the versions of MyBatis,
+           Joda-Time and java-uuid-generator the engine is built against. -->
+      <dependency>
+        <groupId>org.cibseven.bpm</groupId>
+        <artifactId>cibseven-bom</artifactId>
+        <version>${cibseven.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
@@ -161,7 +178,7 @@
       </dependency>
       <dependency>
         <groupId>org.cibseven.bpm</groupId>
-        <artifactId>cibseven-engine-spring-7</artifactId>
+        <artifactId>cibseven-engine-spring</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>
@@ -182,12 +199,17 @@
            three have in two modules belongs at the declaration. -->
       <dependency>
         <groupId>org.cibseven.bpm.springboot</groupId>
-        <artifactId>cibseven-bpm-spring-boot-starter-webapp-4</artifactId>
+        <artifactId>cibseven-bpm-spring-boot-starter-webapp</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>
         <groupId>org.cibseven.bpm.springboot</groupId>
-        <artifactId>cibseven-bpm-spring-boot-starter-external-task-client-4</artifactId>
+        <artifactId>cibseven-bpm-spring-boot-starter-webapp-legacy</artifactId>
+        <version>${cibseven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cibseven.bpm.springboot</groupId>
+        <artifactId>cibseven-bpm-spring-boot-starter-external-task-client</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>

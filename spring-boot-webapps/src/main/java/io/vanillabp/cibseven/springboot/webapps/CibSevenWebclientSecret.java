@@ -10,9 +10,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * Checks the secret of CIB seven's webclient while the application boots.
  *
  * <p>
- * The web application starter of CIB seven, which this module depends on, brings two things:
- * the classic web applications at <code>/camunda</code> and CIB seven's new webclient at
- * <code>/webapp</code>. The webclient signs its login tokens with the key
+ * The web application starter of CIB seven, which this module depends on, brings CIB seven's
+ * new webclient at <code>/webapp</code>. The webclient signs its login tokens with the key
  * <code>cibseven.webclient.authentication.jwtSecret</code>. Without a valid one it refuses to
  * start, deep inside the context, with a message which names neither this module nor the key.
  * </p>
@@ -23,6 +22,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * webclient applies: at least 155 characters, and base64. If the key breaks one of them, the
  * start ends here with a message which names the key and says how to get a secret. Decision 6
  * in the repository's DECISIONS.md says why the module asks for the key and does not set it.
+ * </p>
+ *
+ * <p>
+ * Where the application serves only the classic web applications
+ * ({@value CibSevenWebappsUi#KEY} is <code>legacy</code>), the webclient does not run, and the
+ * key is not checked.
  * </p>
  */
 public class CibSevenWebclientSecret implements EnvironmentPostProcessor {
@@ -45,6 +50,11 @@ public class CibSevenWebclientSecret implements EnvironmentPostProcessor {
   public void postProcessEnvironment(
       final ConfigurableEnvironment environment,
       final SpringApplication application) {
+
+    if (!CibSevenWebappsUi.of(environment).servesWebclient()) {
+      // only the classic web applications are served, and they do not sign tokens
+      return;
+    }
 
     final var secret = environment.getProperty(JWT_SECRET);
 

@@ -1,0 +1,91 @@
+package io.vanillabp.cibseven.springboot.webapps.legacy;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.cibseven.bpm.engine.ProcessEngine;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.web.client.RestClient;
+
+import io.vanillabp.integration.test.utils.SuppressOutputExtension;
+
+/**
+ * The classic web applications, for an application which brings its own users. It leaves
+ * the <code>admin-user</code> section out. Then this module creates nobody, and the web applications ask the visitor to set
+ * an administrator up. That is their own behaviour, VanillaBP does not arrange it. This test
+ * checks that nobody is created and that the web applications are served. It does not check
+ * the setup page.
+ */
+@ExtendWith(SuppressOutputExtension.class)
+@SpringBootTest(
+    webEnvironment = WebEnvironment.RANDOM_PORT,
+    properties = "spring.datasource.url=jdbc:h2:mem:legacy-webapps-no-admin;DB_CLOSE_DELAY=-1")
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
+public class CibSevenLegacyWebappsWithoutAdminUserTest {
+
+  @LocalServerPort
+  private int port;
+
+  @Autowired
+  private ProcessEngine engine;
+
+  @Test
+  @DisplayName("Without a configured administrator no user is created")
+  public void noUserIsCreated() {
+
+    assertEquals(
+        0,
+        engine
+            .getIdentityService()
+            .createUserQuery()
+            .count());
+
+  }
+
+  @Test
+  @DisplayName("The web applications are served nevertheless")
+  public void webappsAreServedNevertheless() {
+
+    final var rest = RestClient
+        .builder()
+        .baseUrl("http://localhost:"
+            + port)
+        .build();
+    final var entry = rest
+        .get()
+        .uri("/camunda")
+        .retrieve()
+        .toBodilessEntity();
+
+    // Camunda 7 redirects /camunda into /camunda/app/, CIB seven answers it with a page of
+    // its own. So the web applications themselves are asked for, too
+    assertTrue(entry.getStatusCode().is3xxRedirection() || entry.getStatusCode().is2xxSuccessful(),
+        () -> ""
+            + entry.getStatusCode());
+    if (entry.getStatusCode().is3xxRedirection()) {
+      assertTrue(
+          entry
+              .getHeaders()
+              .getFirst(HttpHeaders.LOCATION)
+              .contains("/camunda/app/"));
+    }
+    assertTrue(rest
+        .get()
+        .uri("/camunda/app/cockpit/")
+        .retrieve()
+        .toBodilessEntity()
+        .getStatusCode()
+        .is2xxSuccessful());
+
+  }
+
+}

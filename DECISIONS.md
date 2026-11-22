@@ -140,6 +140,12 @@ belongs to the engine.
 The other way would have been to keep the engine's default and teach the boot check the modeler's
 table. Then every prefixed setup would need nine tables nobody uses.
 
+*Changed on 2026-11-21 with the move to CIB seven 3.0. CIB seven 3.0 calls the modeler's tables the
+webclient extensions and adds a few. The engine setting is now `webclientExtensionsEnabled`, and its
+default is `false`. `modelerEnabled` is a deprecated alias of it. The adapter writes its key through
+the new setter. What the entry decides stays the same: the key stays `modeler-enabled`, and the
+adapter writes it into every engine, so the engine's default never decides.*
+
 ### 6. The web application module asks for the secret of CIB seven's webclient, and does not make one up
 
 CIB seven's web application starter for Spring Boot 4 brings two things: the classic web
