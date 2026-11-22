@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.vanillabp</groupId>
+    <artifactId>cibseven-adapter-parent</artifactId>
+    <version>2.0.0-3.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>cibseven-adapter-spring-boot-webapps-legacy</artifactId>
+  <name>VanillaBP CIB seven adapter - Spring Boot webapps legacy</name>
+  <description>Adds CIB seven's classic Cockpit, Tasklist and Admin at /camunda to cibseven-adapter-spring-boot-webapps.</description>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <id>VanillaBP</id>
+      <organization>Phactum Softwareentwicklung GmbH</organization>
+      <organizationUrl>https://www.phactum.at</organizationUrl>
+    </developer>
+  </developers>
+
+  <dependencies>
+    <!-- the module which registers the engines, creates the administrator and reads
+         'vanillabp.webapps.ui'. This module only adds the classic web applications -->
+    <dependency>
+      <groupId>io.vanillabp</groupId>
+      <artifactId>cibseven-adapter-spring-boot-webapps</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <!--
+      Since CIB seven 3.0 the classic Cockpit, Tasklist and Admin are a starter of their own. It
+      brings the classes of the web applications (cibseven-webapp-jakarta 2.2.0), but not their
+      UI files, see the unpack execution below.
+    -->
+    <dependency>
+      <groupId>org.cibseven.bpm.springboot</groupId>
+      <artifactId>cibseven-bpm-spring-boot-starter-webapp-legacy</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>io.vanillabp</groupId>
+      <artifactId>test-utils</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <!-- The UI files of the classic web applications exist only in cibseven-webapp-webjar
+             2.2.0. Version 3.0.0 of the same artifact holds the UI of the new webclient, and Maven
+             puts only one version of an artifact on the classpath. So this module carries the
+             classic UI files in its own jar, the way CIB seven's legacy starter does for its own
+             tests -->
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unpack-the-ui-of-the-classic-webapps</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.cibseven.bpm.webapp</groupId>
+                  <artifactId>cibseven-webapp-webjar</artifactId>
+                  <version>${cibseven-legacy-webjar.version}</version>
+                  <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+                  <includes>META-INF/resources/webjars/camunda/**,META-INF/resources/plugin/**</includes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

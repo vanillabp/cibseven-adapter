@@ -47,6 +47,7 @@
     <module>core</module>
     <module>spring-boot</module>
     <module>spring-boot-webapps</module>
+    <module>spring-boot-webapps-legacy</module>
     <module>quarkus/runtime</module>
     <module>quarkus/deployment</module>
     <module>quarkus/integration-tests</module>
@@ -95,6 +96,10 @@
          minor: the adapter uses engine classes under '.impl.', which CIB seven may change in
          any minor. -->
     <cibseven.version>3.0.0</cibseven.version>
+    <!-- The UI files of the classic Cockpit, Tasklist and Admin. CIB seven ships them only in
+         this release of cibseven-webapp-webjar. The module spring-boot-webapps-legacy copies
+         them into its own jar, see DECISIONS.pending/cibseven-3.0.md. -->
+    <cibseven-legacy-webjar.version>2.2.0</cibseven-legacy-webjar.version>
     <spring-boot.version>4.1.2</spring-boot.version>
     <quarkus.version>3.40.1.2</quarkus.version>
     <lombok.version>1.18.48</lombok.version>
@@ -195,6 +200,11 @@
       <dependency>
         <groupId>org.cibseven.bpm.springboot</groupId>
         <artifactId>cibseven-bpm-spring-boot-starter-webapp</artifactId>
+        <version>${cibseven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cibseven.bpm.springboot</groupId>
+        <artifactId>cibseven-bpm-spring-boot-starter-webapp-legacy</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>
