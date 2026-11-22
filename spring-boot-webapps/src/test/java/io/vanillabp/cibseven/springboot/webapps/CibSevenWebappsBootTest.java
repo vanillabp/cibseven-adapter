@@ -15,23 +15,28 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.ApplicationContext;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.web.client.RestClient;
 
 import io.vanillabp.integration.test.utils.SuppressOutputExtension;
 
 /**
- * Boots an application with this module and asks the web applications what they serve.
+ * Boots an application with this module and nothing set for the web applications, and asks
+ * them what they serve.
  *
  * <p>
- * The interesting assertion is the engine NAME. It proves that Cockpit, Tasklist and
- * Admin talk to the engine VanillaBP built for the adapter id. They do not talk to an
- * engine which Camunda's own auto-configuration created.
+ * The interesting assertion is the engine NAME. It proves that the webclient talks to the engine
+ * VanillaBP built for the adapter id. It does not talk to an engine which Camunda's own
+ * auto-configuration created.
+ * </p>
+ *
+ * <p>
+ * Camunda 7 serves Cockpit, Tasklist and Admin at <code>/camunda</code>. CIB seven 3.0 serves its
+ * new webclient at <code>/webapp</code>, and the classic web applications only come with the
+ * module <code>cibseven-adapter-spring-boot-webapps-legacy</code>. Its tests ask for
+ * <code>/camunda</code>.
  * </p>
  */
 @ExtendWith(SuppressOutputExtension.class)
@@ -58,12 +63,15 @@ public class CibSevenWebappsBootTest {
   @BeforeEach
   public void restClient() {
 
-    // redirects are NOT followed. Where the web application sends a visitor is part of
-    // what this test checks
     rest = RestClient
         .builder()
         .baseUrl("http://localhost:"
             + port)
+        .defaultStatusHandler(status -> true, (
+            request,
+            response) -> {
+          // the status is what the tests look at
+        })
         .build();
 
   }
@@ -84,60 +92,45 @@ public class CibSevenWebappsBootTest {
   }
 
   @Test
-  @DisplayName("A visitor of /camunda is sent into a web application of this engine")
-  public void webappsAreServed() {
+  @DisplayName("Without a choice the webclient is served at /webapp, and nothing at /camunda")
+  public void theWebclientIsTheDefault() {
 
-    final var entry = rest
+    final var index = rest
         .get()
-        .uri("/camunda")
-        .retrieve()
-        .toBodilessEntity();
-
-    // Camunda 7 redirects /camunda into /camunda/app/. CIB seven answers it with a page of
-    // its own. Either way the web applications are reached under /camunda/app/ below
-    assertTrue(entry.getStatusCode().is3xxRedirection() || entry.getStatusCode().is2xxSuccessful(),
-        () -> ""
-            + entry.getStatusCode());
-    if (entry.getStatusCode().is3xxRedirection()) {
-      final var location = entry
-          .getHeaders()
-          .getFirst(HttpHeaders.LOCATION);
-      assertNotNull(location, "the web application should redirect somewhere");
-      assertTrue(location.contains("/camunda/app/"), location);
-    }
-
-    final var app = rest
-        .get()
-        .uri("/camunda/app/cockpit/"
-            + ENGINE
-            + "/")
+        .uri("/webapp/")
         .retrieve()
         .toEntity(String.class);
-
-    assertEquals(HttpStatus.OK, app.getStatusCode());
+    assertEquals(HttpStatus.OK, index.getStatusCode());
     assertTrue(
-        app
-            .getBody()
-            .contains("CIB seven"),
-        () -> "the page should be a CIB seven web application: "
-            + app.getBody());
+        index.getBody().contains("<html") || index.getBody().contains("<!DOCTYPE"),
+        index::getBody);
+
+    assertEquals(
+        HttpStatus.NOT_FOUND,
+        rest
+            .get()
+            .uri("/camunda/app/cockpit/"
+                + ENGINE
+                + "/")
+            .retrieve()
+            .toBodilessEntity()
+            .getStatusCode(),
+        "the classic web applications need a module of their own");
 
   }
 
   @Test
-  @DisplayName("They serve the engine VanillaBP built, and only that one")
+  @DisplayName("It serves the engine VanillaBP built, and only that one")
   public void theEngineIsTheOneVanillaBpBuilt() {
 
     final var engines = rest
         .get()
-        .uri("/camunda/api/engine/engine/")
+        .uri("/webapp/services/v1/engine")
         .retrieve()
         .toEntity(String.class);
 
-    assertEquals(HttpStatus.OK, engines.getStatusCode());
-    assertEquals("[{\"name\":\""
-        + ENGINE
-        + "\"}]", engines.getBody());
+    assertEquals(HttpStatus.OK, engines.getStatusCode(), engines::getBody);
+    assertTrue(engines.getBody().contains(ENGINE), engines::getBody);
 
     // Camunda's engine auto-configuration would have added a second engine on the
     // application's datasource. Its job executor would take VanillaBP's jobs
@@ -147,7 +140,8 @@ public class CibSevenWebappsBootTest {
         "Camunda's engine auto-configuration must not run");
     assertEquals(
         1,
-        context.getBeanProvider(io.vanillabp.cibseven.springboot.engine.CibSevenEngineHolder.class)
+        context
+            .getBeanProvider(io.vanillabp.cibseven.springboot.engine.CibSevenEngineHolder.class)
             .stream()
             .count(),
         "VanillaBP builds one engine per adapter id, and there is one id here");
@@ -164,54 +158,7 @@ public class CibSevenWebappsBootTest {
   @DisplayName("The configured administrator can log in")
   public void theAdministratorCanLogIn() {
 
-    // the first response hands out the token every modifying request has to carry
-    final var page = rest
-        .get()
-        .uri("/camunda/app/cockpit/"
-            + ENGINE
-            + "/")
-        .retrieve()
-        .toBodilessEntity();
-    final var cookies = page
-        .getHeaders()
-        .get(HttpHeaders.SET_COOKIE);
-    assertNotNull(cookies, "the web application should hand out its cookies");
-    final var csrfToken = cookies
-        .stream()
-        .filter(cookie -> cookie.startsWith("XSRF-TOKEN="))
-        .map(cookie -> cookie.substring("XSRF-TOKEN=".length(), cookie.indexOf(';')))
-        .findFirst()
-        .orElseThrow(() -> new AssertionError("no CSRF token in "
-            + cookies));
-
-    final var credentials = new LinkedMultiValueMap<String, String>();
-    credentials.add("username", "demo");
-    credentials.add("password", "demo");
-
-    final var login = rest
-        .post()
-        .uri("/camunda/api/admin/auth/user/"
-            + ENGINE
-            + "/login/cockpit")
-        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-        .header("X-XSRF-TOKEN", csrfToken)
-        .header(HttpHeaders.COOKIE, String.join("; ", cookies))
-        .body(credentials)
-        .retrieve()
-        .toEntity(String.class);
-
-    assertEquals(HttpStatus.OK, login.getStatusCode(), login::getBody);
-    assertTrue(
-        login
-            .getBody()
-            .contains("\"userId\":\"demo\""),
-        login::getBody);
-    assertTrue(
-        login
-            .getBody()
-            .contains("cockpit"),
-        () -> "the administrator should be authorized for cockpit: "
-            + login.getBody());
+    assertNotNull(CibSevenWebclientTest.login(rest, ENGINE, "demo", "demo"));
 
   }
 

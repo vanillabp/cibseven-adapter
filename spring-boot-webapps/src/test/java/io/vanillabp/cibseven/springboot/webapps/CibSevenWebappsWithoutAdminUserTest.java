@@ -1,7 +1,6 @@
 package io.vanillabp.cibseven.springboot.webapps;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.cibseven.bpm.engine.ProcessEngine;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.web.client.RestClient;
@@ -20,10 +19,8 @@ import io.vanillabp.integration.test.utils.SuppressOutputExtension;
 
 /**
  * An application which brings its own users leaves the <code>admin-user</code> section
- * out. Then this module creates nobody, and the web applications ask the visitor to set
- * an administrator up. That is their own behaviour, VanillaBP does not arrange it. This test
- * checks that nobody is created and that the web applications are served. It does not check
- * the setup page.
+ * out. Then this module creates nobody. This test checks that nobody is created and that the
+ * webclient is served.
  */
 @ExtendWith(SuppressOutputExtension.class)
 @SpringBootTest(
@@ -52,39 +49,21 @@ public class CibSevenWebappsWithoutAdminUserTest {
   }
 
   @Test
-  @DisplayName("The web applications are served nevertheless")
+  @DisplayName("The webclient is served nevertheless")
   public void webappsAreServedNevertheless() {
 
-    final var rest = RestClient
-        .builder()
-        .baseUrl("http://localhost:"
-            + port)
-        .build();
-    final var entry = rest
-        .get()
-        .uri("/camunda")
-        .retrieve()
-        .toBodilessEntity();
-
-    // Camunda 7 redirects /camunda into /camunda/app/, CIB seven answers it with a page of
-    // its own. So the web applications themselves are asked for, too
-    assertTrue(entry.getStatusCode().is3xxRedirection() || entry.getStatusCode().is2xxSuccessful(),
-        () -> ""
-            + entry.getStatusCode());
-    if (entry.getStatusCode().is3xxRedirection()) {
-      assertTrue(
-          entry
-              .getHeaders()
-              .getFirst(HttpHeaders.LOCATION)
-              .contains("/camunda/app/"));
-    }
-    assertTrue(rest
-        .get()
-        .uri("/camunda/app/cockpit/")
-        .retrieve()
-        .toBodilessEntity()
-        .getStatusCode()
-        .is2xxSuccessful());
+    assertEquals(
+        HttpStatus.OK,
+        RestClient
+            .builder()
+            .baseUrl("http://localhost:"
+                + port)
+            .build()
+            .get()
+            .uri("/webapp/")
+            .retrieve()
+            .toBodilessEntity()
+            .getStatusCode());
 
   }
 
