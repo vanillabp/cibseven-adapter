@@ -98,7 +98,7 @@
     <cibseven.version>3.0.0</cibseven.version>
     <!-- The UI files of the classic Cockpit, Tasklist and Admin. CIB seven ships them only in
          this release of cibseven-webapp-webjar. The module spring-boot-webapps-legacy copies
-         them into its own jar, see DECISIONS.pending/cibseven-3.0.md. -->
+         them into its own jar, see decision 12 in the repository's DECISIONS.md. -->
     <cibseven-legacy-webjar.version>2.2.0</cibseven-legacy-webjar.version>
     <spring-boot.version>4.1.2</spring-boot.version>
     <quarkus.version>3.40.1.2</quarkus.version>
