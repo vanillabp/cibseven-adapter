@@ -13,7 +13,7 @@ name: Release 🚀
   workflow_dispatch:
     inputs:
       release_version:
-        description: Version to release (e.g. 2.0.0-2.2)
+        description: Version to release (e.g. 2.0.0-3.0)
         required: true
       train:
         description: "Release train, e.g. 2.0. Empty: this release uploads to Maven Central itself. Set: the bundle is kept for release-train.yaml in maven-release-parent. Release the repositories of a train in the order of their dependencies: each release reads the bundles of the releases before it."
@@ -210,8 +210,8 @@ jobs:
           draft: true
       - name: Calculate next snapshot version
         run: |
-          # raises the patch and keeps what follows the first dash, so 2.0.0-2.2 becomes
-          # 2.0.1-2.2-SNAPSHOT
+          # raises the patch and keeps what follows the first dash, so 2.0.0-3.0 becomes
+          # 2.0.1-3.0-SNAPSHOT
           if [[ ! "$RELEASE_VERSION" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)(-[0-9A-Za-z.]+)?$ ]]; then
             echo "::error::'$RELEASE_VERSION' is not of the form 1.2.3 or 1.2.3-<suffix>"
             exit 1
