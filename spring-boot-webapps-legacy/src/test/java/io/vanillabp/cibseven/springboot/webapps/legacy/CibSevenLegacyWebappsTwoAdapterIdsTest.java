@@ -1,4 +1,4 @@
-package io.vanillabp.cibseven.springboot.webapps;
+package io.vanillabp.cibseven.springboot.webapps.legacy;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,7 +22,7 @@ import io.vanillabp.integration.test.utils.SuppressOutputExtension;
 
 /**
  * Two <code>cibseven</code> adapter ids are two engines. This is the side-by-side setup of
- * a migration. Both engines show up in the web applications, in their engine switcher.
+ * a migration. Both engines show up in the classic web applications, in their engine switcher.
  *
  * <p>
  * The second id runs on a datasource of its own, which the application provides as a
@@ -33,14 +33,14 @@ import io.vanillabp.integration.test.utils.SuppressOutputExtension;
 @ExtendWith(SuppressOutputExtension.class)
 @SpringBootTest(
     classes = {
-        TestApplication.class, CibSevenWebappsTwoAdapterIdsTest.SecondDataSource.class
+        TestApplication.class, CibSevenLegacyWebappsTwoAdapterIdsTest.SecondDataSource.class
     },
     webEnvironment = WebEnvironment.RANDOM_PORT,
     properties = {
         "vanillabp.adapters.cibseven.data-source-name=dataSource", "vanillabp.adapters.c7-new.type=cibseven", "vanillabp.adapters.c7-new.data-source-name=c7NewDataSource", "vanillabp.prioritized-adapters=cibseven,c7-new"
     })
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-public class CibSevenWebappsTwoAdapterIdsTest {
+public class CibSevenLegacyWebappsTwoAdapterIdsTest {
 
   /**
    * The datasources of both engines, as an application would provide them. Spring Boot's own
@@ -56,7 +56,7 @@ public class CibSevenWebappsTwoAdapterIdsTest {
     public DataSource dataSource() {
 
       return new SimpleDriverDataSource(
-          new org.h2.Driver(), "jdbc:h2:mem:c7-webapps-two-ids;DB_CLOSE_DELAY=-1", "sa", "");
+          new org.h2.Driver(), "jdbc:h2:mem:legacy-webapps-two-ids;DB_CLOSE_DELAY=-1", "sa", "");
 
     }
 
@@ -64,7 +64,7 @@ public class CibSevenWebappsTwoAdapterIdsTest {
     public DataSource c7NewDataSource() {
 
       return new SimpleDriverDataSource(
-          new org.h2.Driver(), "jdbc:h2:mem:c7-webapps-two-ids-new;DB_CLOSE_DELAY=-1", "sa", "");
+          new org.h2.Driver(), "jdbc:h2:mem:legacy-webapps-two-ids-new;DB_CLOSE_DELAY=-1", "sa", "");
 
     }
 

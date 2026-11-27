@@ -38,6 +38,14 @@
       <artifactId>cibseven-adapter-quarkus-integration-tests</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <!-- the tests which run the Camunda 7 adapter next to this one, a module only this
+         repository has. It compiles no main sources, so the POM. -->
+    <dependency>
+      <groupId>io.vanillabp</groupId>
+      <artifactId>cibseven-adapter-quarkus-migration-tests</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
   </dependencies>
 
   <build>

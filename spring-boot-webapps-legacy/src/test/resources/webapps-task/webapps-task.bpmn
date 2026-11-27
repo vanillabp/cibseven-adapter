@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A user task somebody completes in a web application, followed by a service task which
+     VanillaBP serves. The service task runs only if the completion happened in the engine
+     VanillaBP built. -->
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_WebappsTask" targetNamespace="http://bpmn.io/schema/bpmn">
+  <bpmn:process id="WebappsTaskProcess" isExecutable="true">
+    <bpmn:startEvent id="WT_Start">
+      <bpmn:outgoing>WT_f1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="WT_f1" sourceRef="WT_Start" targetRef="WT_Review" />
+    <bpmn:userTask id="WT_Review" name="Review">
+      <bpmn:incoming>WT_f1</bpmn:incoming>
+      <bpmn:outgoing>WT_f2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="WT_f2" sourceRef="WT_Review" targetRef="WT_Archive" />
+    <bpmn:serviceTask id="WT_Archive" name="Archive" camunda:delegateExpression="${archive}">
+      <bpmn:incoming>WT_f2</bpmn:incoming>
+      <bpmn:outgoing>WT_f3</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="WT_f3" sourceRef="WT_Archive" targetRef="WT_End" />
+    <bpmn:endEvent id="WT_End">
+      <bpmn:incoming>WT_f3</bpmn:incoming>
+    </bpmn:endEvent>
+  </bpmn:process>
+</bpmn:definitions>

@@ -1,9 +1,15 @@
 {
   "properties": [
     {
+      "name": "vanillabp.webapps.ui",
+      "type": "io.vanillabp.cibseven.springboot.webapps.CibSevenWebappsUi",
+      "description": "Which web applications of CIB seven the application serves: 'webclient' (the new webclient at /webapp), 'legacy' (the classic Cockpit, Tasklist and Admin at /camunda) or 'both'. 'legacy' and 'both' need the module cibseven-adapter-spring-boot-webapps-legacy. It holds for every adapter id whose webapps are enabled.",
+      "defaultValue": "webclient"
+    },
+    {
       "name": "vanillabp.adapters.cibseven.webapps.enabled",
       "type": "java.lang.Boolean",
-      "description": "Whether Cockpit, Tasklist and Admin serve the engine of this adapter id. Switch it off for an engine which only exists for a migration. All keys of this section work for every adapter id of type 'cibseven', not only for the id 'cibseven'.",
+      "description": "Whether the web applications serve the engine of this adapter id, the webclient as well as Cockpit, Tasklist and Admin. Switch it off for an engine which only exists for a migration. All keys of this section work for every adapter id of type 'cibseven', not only for the id 'cibseven'.",
       "defaultValue": true
     },
     {
@@ -30,6 +36,16 @@
       "name": "vanillabp.adapters.cibseven.webapps.admin-user.email",
       "type": "java.lang.String",
       "description": "The mail address of the administrator."
+    }
+  ],
+  "hints": [
+    {
+      "name": "vanillabp.webapps.ui",
+      "values": [
+        { "value": "webclient", "description": "CIB seven's new webclient at /webapp. This is the default." },
+        { "value": "legacy", "description": "The classic Cockpit, Tasklist and Admin at /camunda. Needs the module cibseven-adapter-spring-boot-webapps-legacy." },
+        { "value": "both", "description": "The webclient at /webapp and the classic web applications at /camunda. Needs the module cibseven-adapter-spring-boot-webapps-legacy." }
+      ]
     }
   ]
 }

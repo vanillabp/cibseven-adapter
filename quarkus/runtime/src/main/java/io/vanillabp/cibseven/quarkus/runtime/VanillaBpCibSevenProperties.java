@@ -256,7 +256,7 @@ public interface VanillaBpCibSevenProperties {
   interface CibSevenEnginePluginKeys {
 
     /**
-     * The plugin's class, e.g. <code>org.camunda.xstream.ProcessEnginePlugin</code>.
+     * The plugin's class, e.g. <code>org.cibseven.spin.plugin.impl.SpinProcessEnginePlugin</code>.
      *
      * @return The class name, empty where the section names none
      */
@@ -388,8 +388,7 @@ public interface VanillaBpCibSevenProperties {
 
     /**
      * OPTIONAL serialization format for a shared value which has no variable type in the
-     * engine, e.g. <code>application/json</code> (the SPIN JSON dataformat) or
-     * <code>application/xstream</code> (camunda-xstream). It is applied to the engine's
+     * engine, e.g. <code>application/json</code> (the SPIN JSON dataformat). It is applied to the engine's
      * <code>defaultSerializationFormat</code> and to the variables VanillaBP writes. A
      * workflow module or a workflow may override it (see
      * {@link VanillaBpCibSevenProperties#workflowModules()}). The matching dataformat is a
@@ -475,6 +474,14 @@ public interface VanillaBpCibSevenProperties {
      * @return The configured answer, empty for <code>false</code>
      */
     Optional<Boolean> allowPluginsToChangeAdapterSettings();
+
+    /**
+     * OPTIONAL: whether the engine runs the tables of CIB seven's modeler. The default is
+     * <code>false</code>. See {@code CibSevenModeler}.
+     *
+     * @return The configured answer, empty for <code>false</code>
+     */
+    Optional<Boolean> modelerEnabled();
 
   }
 

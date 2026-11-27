@@ -1,0 +1,29 @@
+quarkus:
+  datasource:
+    db-kind: h2
+    jdbc:
+      url: jdbc:h2:mem:quarkus-same-tables;DB_CLOSE_DELAY=-1
+  hibernate-orm:
+    schema-management:
+      strategy: drop-and-create
+vanillabp:
+  adapters:
+    c7:
+      type: camunda7
+    cs:
+      type: cibseven
+  prioritized-adapters:
+    - cs
+    - c7
+  workflow-modules:
+    migration:
+      adapters:
+        c7:
+          resources-location: classpath:migration/processes
+        cs:
+          resources-location: classpath:migration/processes
+      workflows:
+        MigrationProcess:
+          allow-full-sync-with-bpms: true
+          declared-aggregate-values:
+            - '*'

@@ -50,11 +50,11 @@ public class CibSevenWebappsEnvironmentPostProcessorTest {
 
     postProcessor.postProcessEnvironment(environment, null);
 
-    assertEquals(
-        1,
-        environment
-            .getPropertySources()
-            .size(),
+    final var added = environment
+        .getPropertySources()
+        .get(CibSevenWebappsEnvironmentPostProcessor.PROPERTY_SOURCE_NAME);
+    assertTrue(
+        (added == null) || !added.containsProperty(CibSevenWebappsEnvironmentPostProcessor.CAMUNDA_BPM_ENABLED),
         "nothing has to be added when the application said it already");
 
   }

@@ -12,8 +12,8 @@ import io.vanillabp.cibseven.springboot.engine.CibSevenEngineHolder;
 import io.vanillabp.cibseven.springboot.processservice.CibSevenProcessServiceConfiguration;
 
 /**
- * Serves Camunda's web applications at <code>/camunda</code> against the engines
- * VanillaBP built.
+ * Serves CIB seven's web applications against the engines VanillaBP built. Which of them,
+ * the new webclient or the classic ones, says {@link CibSevenWebappsUi}.
  *
  * <p>
  * Two things are needed for that, and neither is obvious.
@@ -33,7 +33,7 @@ import io.vanillabp.cibseven.springboot.processservice.CibSevenProcessServiceCon
 @AutoConfiguration(after = CibSevenProcessServiceConfiguration.class)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @EnableConfigurationProperties({
-    CamundaBpmProperties.class, CibSevenWebappsProperties.class
+    CamundaBpmProperties.class, CibSevenWebappsProperties.class, CibSevenWebappsUiProperties.class
 })
 public class CibSevenWebappsAutoConfiguration {
 

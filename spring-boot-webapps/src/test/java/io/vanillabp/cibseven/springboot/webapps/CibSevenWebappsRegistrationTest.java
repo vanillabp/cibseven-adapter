@@ -19,6 +19,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.ObjectProvider;
 
 import io.vanillabp.cibseven.springboot.engine.CibSevenEngineHolder;
+import io.vanillabp.cibseven.springboot.webapps.CibSevenWebappsProperties.AdapterSection;
+import io.vanillabp.cibseven.springboot.webapps.CibSevenWebappsProperties.AdminUser;
+import io.vanillabp.cibseven.springboot.webapps.CibSevenWebappsProperties.Webapps;
 import io.vanillabp.integration.test.utils.SuppressOutputExtension;
 
 /**

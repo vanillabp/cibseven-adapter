@@ -31,11 +31,24 @@
     </dependency>
     <dependency>
       <groupId>io.vanillabp</groupId>
+      <artifactId>cibseven-adapter-spring-boot-webapps-legacy</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.vanillabp</groupId>
       <artifactId>cibseven-adapter-integration-tests</artifactId>
       <version>${project.version}</version>
       <!-- test-only module without main sources: it produces no jar, so depend on
            its POM. 'report-aggregate' resolves the reactor project by groupId and
            artifactId and still picks up its 'jacoco.exec'. -->
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>io.vanillabp</groupId>
+      <artifactId>cibseven-adapter-migration-tests</artifactId>
+      <version>${project.version}</version>
+      <!-- the tests which run the Camunda 7 adapter next to this one, a module only this
+           repository has. Test-only as well, so the POM, like above. -->
       <type>pom</type>
     </dependency>
   </dependencies>

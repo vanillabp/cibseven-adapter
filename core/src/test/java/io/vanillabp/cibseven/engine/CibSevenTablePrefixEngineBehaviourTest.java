@@ -80,6 +80,9 @@ public class CibSevenTablePrefixEngineBehaviourTest {
     configuration.setJobExecutorActivate(false);
     configuration.setHistoryTimeToLive("P180D");
     configuration.setProcessEngineName("table-prefix-%s".formatted(System.nanoTime()));
+    // what the adapter does to every engine it builds. CIB seven's own default would also
+    // check the modeler's tables under the prefix, and this schema has none
+    CibSevenModeler.applyTo("table-prefix", configuration, new CibSevenEngineProperties());
     if (tablePrefix != null) {
       configuration.setDatabaseTablePrefix(tablePrefix);
     }

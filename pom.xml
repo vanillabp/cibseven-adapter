@@ -47,10 +47,13 @@
     <module>core</module>
     <module>spring-boot</module>
     <module>spring-boot-webapps</module>
+    <module>spring-boot-webapps-legacy</module>
     <module>quarkus/runtime</module>
     <module>quarkus/deployment</module>
     <module>quarkus/integration-tests</module>
+    <module>quarkus/migration-tests</module>
     <module>integration-tests</module>
+    <module>migration-tests</module>
     <module>test-coverage-report</module>
   </modules>
 
@@ -86,7 +89,17 @@
     <coverage.rule>90</coverage.rule>
     <spi-for-java.version>2.0.0-SNAPSHOT</spi-for-java.version>
     <adapter-platform.version>2.0.0-SNAPSHOT</adapter-platform.version>
+    <!-- The CIB seven minor this adapter is built and tested with, in its public release
+         x.y.0. The minor is part of the adapter version, too (see decision 3 in the
+         repository's DECISIONS.md). An application with a patch release of CIB seven may set
+         that patch, because a patch keeps the API and the schema. It must not set another
+         minor: the adapter uses engine classes under '.impl.', which CIB seven may change in
+         any minor. -->
     <cibseven.version>3.0.0</cibseven.version>
+    <!-- The UI files of the classic Cockpit, Tasklist and Admin. CIB seven ships them only in
+         this release of cibseven-webapp-webjar. The module spring-boot-webapps-legacy copies
+         them into its own jar, see decision 12 in the repository's DECISIONS.md. -->
+    <cibseven-legacy-webjar.version>2.2.0</cibseven-legacy-webjar.version>
     <spring-boot.version>4.1.3</spring-boot.version>
     <quarkus.version>3.40.1.2</quarkus.version>
     <lombok.version>1.18.48</lombok.version>
@@ -97,6 +110,18 @@
 
   <dependencyManagement>
     <dependencies>
+      <!-- CIB seven's own BOM comes first, so its versions win over those of Spring Boot and
+           Quarkus. The JSON data format of Spin in CIB seven 3.0 needs json-path 3, for
+           Jackson 3. Spring Boot 4.1 and Quarkus manage json-path 2, and with it the engine
+           does not start: SPIN/JACKSON-JSON-01018. The BOM also names the versions of MyBatis,
+           Joda-Time and java-uuid-generator the engine is built against. -->
+      <dependency>
+        <groupId>org.cibseven.bpm</groupId>
+        <artifactId>cibseven-bom</artifactId>
+        <version>${cibseven.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
@@ -175,6 +200,11 @@
       <dependency>
         <groupId>org.cibseven.bpm.springboot</groupId>
         <artifactId>cibseven-bpm-spring-boot-starter-webapp</artifactId>
+        <version>${cibseven.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.cibseven.bpm.springboot</groupId>
+        <artifactId>cibseven-bpm-spring-boot-starter-webapp-legacy</artifactId>
         <version>${cibseven.version}</version>
       </dependency>
       <dependency>
