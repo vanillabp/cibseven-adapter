@@ -126,6 +126,52 @@ public class CibSevenLegacyWebappsBootTest {
   }
 
   @Test
+  @DisplayName("A URL without an engine name serves the engine VanillaBP built")
+  public void aUrlWithoutAnEngineNameFindsTheEngine() {
+
+    // Camunda 7 redirects such a URL to the one with the name of its default engine. CIB seven
+    // serves the page right away, and the page's base reference holds that name. So all links
+    // of the page go to the engine VanillaBP built
+    final var page = rest
+        .get()
+        .uri("/camunda/app/cockpit/")
+        .retrieve()
+        .toEntity(String.class);
+
+    assertEquals(HttpStatus.OK, page.getStatusCode());
+    assertTrue(
+        page
+            .getBody()
+            .contains("<base href=\"/camunda/app/cockpit/"
+                + ENGINE
+                + "/\""),
+        page::getBody);
+
+  }
+
+  @Test
+  @DisplayName("A URL with the engine name of version 1, 'default', is not served")
+  public void aUrlWithAnotherEngineNameIsNotServed() {
+
+    // a bookmark of version 1 holds the engine name 'default'. The answer is CIB seven's: it
+    // serves the page for any engine name and fails on the engine which is not there. If a
+    // version of CIB seven answers otherwise, this test fails, so the new answer can be told
+    // to the users of such a bookmark
+    final var app = rest
+        .get()
+        .uri("/camunda/app/cockpit/default/")
+        .retrieve()
+        .onStatus(status -> true, (
+            request,
+            response) -> {
+        })
+        .toBodilessEntity();
+
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, app.getStatusCode());
+
+  }
+
+  @Test
   @DisplayName("They serve the engine VanillaBP built, and only that one")
   public void theEngineIsTheOneVanillaBpBuilt() {
 
